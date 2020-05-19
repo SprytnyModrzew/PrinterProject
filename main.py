@@ -1,10 +1,15 @@
 import sys
 from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
                              QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QMainWindow, QPlainTextEdit,
-                             QHBoxLayout, QGridLayout, QComboBox)
+                             QHBoxLayout, QGridLayout, QComboBox, QErrorMessage, QMessageBox)
 import qtmodern.styles
 import qtmodern.windows
 import valid
+import db
+from datetime import date
+
+database = db.DataBase()
+print(database.get_potwierdzenia_all())
 
 
 class Form(QDialog):
@@ -29,6 +34,41 @@ class Form(QDialog):
 
 
 class Adder(QDialog):
+    def add(self):
+        types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
+
+        print(types[self.typeList.currentIndex()])
+        name = database.get_all_pracownicy()
+        database.insert_potwierdzenie(data=date.today(),
+                                      typ=types[self.typeList.currentIndex()],
+                                      nazwa_urzadzenia=self.lineModel.text(),
+                                      sn=self.lineNumber.text(),
+                                      nazwa_klienta=self.lineClient.text(),
+                                      nr_tel=self.lineClientNumber.text(),
+                                      opis_uszk=self.description.toPlainText(),
+                                      informacje_dodatkowe=self.addSome.toPlainText(),
+                                      opis_naprawy="",
+                                      imie=name[self.empList.currentIndex()]["Imie"],
+                                      nazwisko=name[self.empList.currentIndex()]["Nazwisko"])
+        print(database.get_potwierdzenia_all())
+
+    def validate(self):
+        try:
+            valid.device_name_valid(self.lineModel.text())
+            valid.serial_number_valid(self.lineNumber.text())
+            valid.client_name_valid(self.lineClient.text())
+            valid.phone_number_valid(self.lineClientNumber.text())
+            valid.description_valid(self.description.toPlainText())
+        except ValueError as error:
+            error_dialog = QMessageBox()
+            print(error.args)
+            error_dialog.setWindowTitle("Error")
+            error_dialog.setText(error.args[0])
+            error_dialog.exec()
+            return
+        self.add()
+        # jarkowe wstawianie do bazki
+
     def __init__(self, parent=None):
         super(Adder, self).__init__(parent)
 
@@ -63,6 +103,9 @@ class Adder(QDialog):
         self.lineModel = QLineEdit()
         self.lineNumber = QLineEdit()
         self.lineClient = QLineEdit()
+
+        self.buttonFinish = QPushButton("Dodaj potwierdzenie")
+
         self.lineClientNumber = QLineEdit()
         self.formLayout.addRow(
             QLabel("Nazwa/model urządzenia"), self.lineModel
@@ -80,7 +123,24 @@ class Adder(QDialog):
         self.mainLayout.addWidget(self.formLayoutBox)
         self.mainLayout.addWidget(self.formLayoutBox2)
         self.mainLayout.addWidget(self.formLayoutBox3)
+
+        self.mainLayout.addWidget(self.buttonFinish)
+
         self.setLayout(self.mainLayout)
+
+        self.buttonFinish.clicked.connect(self.validate)
+
+        self.typeList.addItem("Drukarka atramentowa")
+        self.typeList.addItem("Drukarka laserowa")
+        self.typeList.addItem("Drukarka igłowa")
+        self.typeList.addItem("Laptop")
+        self.typeList.addItem("Telefon")
+
+        # adding employees from db
+
+        temp = database.get_all_pracownicy()
+        for i in temp:
+            self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
 
 
 if __name__ == '__main__':
