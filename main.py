@@ -9,7 +9,7 @@ import db
 from datetime import date
 
 database = db.DataBase()
-print(database.get_potwierdzenia_all())
+employees = database.get_all_pracownicy()
 
 
 class Form(QDialog):
@@ -38,7 +38,7 @@ class Adder(QDialog):
         types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
 
         print(types[self.typeList.currentIndex()])
-        name = database.get_all_pracownicy()
+
         database.insert_potwierdzenie(data=date.today(),
                                       typ=types[self.typeList.currentIndex()],
                                       nazwa_urzadzenia=self.lineModel.text(),
@@ -48,8 +48,7 @@ class Adder(QDialog):
                                       opis_uszk=self.description.toPlainText(),
                                       informacje_dodatkowe=self.addSome.toPlainText(),
                                       opis_naprawy="",
-                                      imie=name[self.empList.currentIndex()]["Imie"],
-                                      nazwisko=name[self.empList.currentIndex()]["Nazwisko"])
+                                      id_prac=employees[self.typeList.currentIndex()]["Id_pracownika"])
         print(database.get_potwierdzenia_all())
 
     def validate(self):
@@ -138,8 +137,7 @@ class Adder(QDialog):
 
         # adding employees from db
 
-        temp = database.get_all_pracownicy()
-        for i in temp:
+        for i in employees:
             self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
 
 

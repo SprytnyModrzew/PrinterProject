@@ -14,8 +14,7 @@ class DataBase:
         sql_create_table_pracownicy = "CREATE TABLE Pracownicy (" \
                                       "Id_pracownika INTEGER PRIMARY KEY AUTOINCREMENT," \
                                       "Imie VARCHAR(20) NOT NULL," \
-                                      "Nazwisko VARCHAR(20) NOT NULL," \
-                                      "UNIQUE(Imie, Nazwisko));"
+                                      "Nazwisko VARCHAR(20) NOT NULL);"
         self.cursor.execute(sql_create_table_pracownicy)
 
         sql_create_table_potwierdzenia = "CREATE TABLE Potwierdzenia (" \
@@ -106,14 +105,10 @@ class DataBase:
         x = self.cursor.fetchone()
         return x[0]
 
-
-    def insert_potwierdzenie(self, data, typ, nazwa_urzadzenia, sn, nazwa_klienta, nr_tel, opis_uszk, informacje_dodatkowe, opis_naprawy, imie, nazwisko):
-        sel_id_prac = "SELECT Id_pracownika FROM Pracownicy WhERE Imie = '{}' AND Nazwisko = '{}'".format(imie, nazwisko)
-        self.cursor.execute(sel_id_prac)
-        id_prac = self.cursor.fetchone()
+    def insert_potwierdzenie(self, data, typ, nazwa_urzadzenia, sn, nazwa_klienta, nr_tel, opis_uszk, informacje_dodatkowe, opis_naprawy, id_prac):
         sql_insert_potwierdzenie = "INSERT INTO Potwierdzenia (Data, Typ_urzadzenia, Nazwa_urzadzenia, Nr_seryjny, Nazwa_klienta, Nr_telefonu_klienta, Opis_uszkodzenia," \
                                    "Informacje_dodatkowe, Opis_naprawy, Id_pracownika) VALUES ('{}','{}','{}','{}','{}', {}, '{}', '{}', '{}', {})" \
-                                   "".format(data, typ, nazwa_urzadzenia, sn, nazwa_klienta, nr_tel, opis_uszk, informacje_dodatkowe, opis_naprawy, id_prac[0])
+                                   "".format(data, typ, nazwa_urzadzenia, sn, nazwa_klienta, nr_tel, opis_uszk, informacje_dodatkowe, opis_naprawy, id_prac)
         self.cursor.execute(sql_insert_potwierdzenie)
         self.conn.commit()
 
@@ -154,14 +149,15 @@ class DataBase:
 
 
     def get_all_pracownicy(self):
-        sql_select_pracownicy = "SELECT Imie, Nazwisko FROM Pracownicy"
+        sql_select_pracownicy = "SELECT * FROM Pracownicy"
         self.cursor.execute(sql_select_pracownicy)
         pracownik =  self.cursor.fetchall()
         listx = []
         for x in pracownik:
             dict = {
-                "Imie": x[0],
-                "Nazwisko": x[1]
+                "Id_pracownika": x[0],
+                "Imie": x[1],
+                "Nazwisko": x[2]
             }
             listx.append(dict)
         return listx
@@ -169,7 +165,6 @@ class DataBase:
 
     def sql_get_potwierdzenia(self, typ):
         listx = []
-        dictX = {}
         for x in typ:
             if(x[0] == "laptop"):
                 sql_select_all = "SELECT * FROM Potwierdzenia p JOIN Pracownicy x ON p.Id_pracownika = x.Id_pracownika " \
@@ -177,7 +172,7 @@ class DataBase:
                 self.cursor.execute(sql_select_all)
                 potw = self.cursor.fetchall()
                 for z in potw:
-                    dictX = {"Nr_potwierdzenia": z[0],
+                    dict = {"Nr_potwierdzenia": z[0],
                             "Data": z[1],
                             "Typ_urzadzenia": z[2],
                             "Nazwa_urzadzenia": z[3],
@@ -187,6 +182,7 @@ class DataBase:
                             "Opis_uszkodzenia": z[7],
                             "Informacje_dodatkowe": z[8],
                             "Opis_naprawy": z[9],
+                            "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
                             "Dodatkowe":
@@ -195,14 +191,14 @@ class DataBase:
                                 "Mysz_usb": z[19],
                                 "Opakowanie": z[20]}
                             }
-                listx.append(dictX)
+                listx.append(dict)
             elif(x[0] == "telefon"):
                 sql_select_all = "SELECT * FROM Potwierdzenia p JOIN Pracownicy x ON p.Id_pracownika = x.Id_pracownika " \
                                  "JOIN Telefon t ON p.Nr_potwierdzenia = t.Id_potwierdzenia WHERE p.Nr_potwierdzenia = {};".format(x[1])
                 self.cursor.execute(sql_select_all)
                 potw = self.cursor.fetchall()
                 for z in potw:
-                    dictX = {"Nr_potwierdzenia": z[0],
+                    dict = {"Nr_potwierdzenia": z[0],
                             "Data": z[1],
                             "Typ_urzadzenia": z[2],
                             "Nazwa_urzadzenia": z[3],
@@ -212,6 +208,7 @@ class DataBase:
                             "Opis_uszkodzenia": z[7],
                             "Informacje_dodatkowe": z[8],
                             "Opis_naprawy": z[9],
+                            "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
                             "Dodatkowe":
@@ -222,14 +219,14 @@ class DataBase:
                                 "Karta_pamieci": z[21],
                                 "Opakowanie": z[22]}
                             }
-                    listx.append(dictX)
+                    listx.append(dict)
             elif(x[0] == "drukarka_atramentowa"):
                 sql_select_all = "SELECT * FROM Potwierdzenia p JOIN Pracownicy x ON p.Id_pracownika = x.Id_pracownika " \
                                  "JOIN Drukarka_atramentowa a ON p.Nr_potwierdzenia = a.Id_potwierdzenia WHERE p.Nr_potwierdzenia = {};".format(x[1])
                 self.cursor.execute(sql_select_all)
                 potw = self.cursor.fetchall()
                 for z in potw:
-                    dictX = {"Nr_potwierdzenia": z[0],
+                    dict = {"Nr_potwierdzenia": z[0],
                             "Data": z[1],
                             "Typ_urzadzenia": z[2],
                             "Nazwa_urzadzenia": z[3],
@@ -239,6 +236,7 @@ class DataBase:
                             "Opis_uszkodzenia": z[7],
                             "Informacje_dodatkowe": z[8],
                             "Opis_naprawy": z[9],
+                            "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
                             "Dodatkowe":
@@ -249,14 +247,14 @@ class DataBase:
                                 "Tusz_kolorowy": z[21],
                                 "Opakowanie": z[22]}
                             }
-                    listx.append(dictX)
+                    listx.append(dict)
             elif(x[0] == "drukarka_laserowa"):
                 sql_select_all = "SELECT * FROM Potwierdzenia p JOIN Pracownicy x ON p.Id_pracownika = x.Id_pracownika " \
                                  "JOIN Drukarka_laserowa d ON p.Nr_potwierdzenia = d.Id_potwierdzenia WHERE p.Nr_potwierdzenia = {};".format(x[1])
                 self.cursor.execute(sql_select_all)
                 potw = self.cursor.fetchall()
                 for z in potw:
-                    dictX = {"Nr_potwierdzenia": z[0],
+                    dict = {"Nr_potwierdzenia": z[0],
                             "Data": z[1],
                             "Typ_urzadzenia": z[2],
                             "Nazwa_urzadzenia": z[3],
@@ -266,6 +264,7 @@ class DataBase:
                             "Opis_uszkodzenia": z[7],
                             "Informacje_dodatkowe": z[8],
                             "Opis_naprawy": z[9],
+                            "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
                             "Dodatkowe":
@@ -275,14 +274,14 @@ class DataBase:
                                 "Toner_kolorowy": z[20],
                                 "Opakowanie": z[21]}
                             }
-                    listx.append(dictX)
+                    listx.append(dict)
             elif(x[0] == "drukarka_iglowa"):
                 sql_select_all = "SELECT * FROM Potwierdzenia p JOIN Pracownicy x ON p.Id_pracownika = x.Id_pracownika " \
                                  "JOIN Drukarka_iglowa i ON p.Nr_potwierdzenia = i.Id_potwierdzenia WHERE p.Nr_potwierdzenia = {};".format(x[1])
                 self.cursor.execute(sql_select_all)
                 potw = self.cursor.fetchall()
                 for z in potw:
-                    dictX = {"Nr_potwierdzenia": z[0],
+                    dict = {"Nr_potwierdzenia": z[0],
                             "Data": z[1],
                             "Typ_urzadzenia": z[2],
                             "Nazwa_urzadzenia": z[3],
@@ -292,6 +291,7 @@ class DataBase:
                             "Opis_uszkodzenia": z[7],
                             "Informacje_dodatkowe": z[8],
                             "Opis_naprawy": z[9],
+                            "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
                             "Dodatkowe":
@@ -301,7 +301,7 @@ class DataBase:
                                 "Tasma_barwiaca": z[20],
                                 "Opakowanie": z[21]}
                             }
-                    listx.append(dictX)
+                    listx.append(dict)
         return listx
 
     def get_potwierdzenia_all(self):
@@ -407,16 +407,14 @@ class DataBase:
         self.cursor.execute(sql_update_telefon)
         self.conn.commit()
 
-    def update_pracownicy(self, imie_old, nazwisko_old, imie, nazwisko):
+    def update_pracownicy(self, id_prac, imie, nazwisko):
         sql_update_pracownik = "UPDATE Pracownicy SET " \
                                "Imie = '{}'," \
                                "Nazwisko = '{}' " \
-                               "WHERE Imie = '{}' AND Nazwisko = '{}'".format(imie, nazwisko, imie_old, nazwisko_old)
+                               "WHERE Id_pracownika = {};".format(imie, nazwisko, id_prac)
+        print(sql_update_pracownik)
         self.cursor.execute(sql_update_pracownik)
         self.conn.commit()
-
-
-
 
 
 
