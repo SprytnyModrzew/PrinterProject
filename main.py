@@ -38,7 +38,8 @@ class Adder(QDialog):
         types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
 
         print(types[self.typeList.currentIndex()])
-
+        print(self.lineClientNumber.text())
+        print(employees[self.empList.currentIndex()]["Id_pracownika"])
         database.insert_potwierdzenie(data=date.today(),
                                       typ=types[self.typeList.currentIndex()],
                                       nazwa_urzadzenia=self.lineModel.text(),
@@ -48,8 +49,9 @@ class Adder(QDialog):
                                       opis_uszk=self.description.toPlainText(),
                                       informacje_dodatkowe=self.addSome.toPlainText(),
                                       opis_naprawy="",
-                                      id_prac=employees[self.typeList.currentIndex()]["Id_pracownika"])
-        print(database.get_potwierdzenia_all())
+                                      id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
+        print(database.get_all_pracownicy())
+        self.destroy()
 
     def validate(self):
         try:
