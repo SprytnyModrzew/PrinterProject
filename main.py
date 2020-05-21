@@ -83,7 +83,7 @@ class Adder(QDialog):
         super(Adder, self).__init__(parent)
 
         self.mainLayout = QVBoxLayout()
-
+        self.setFixedSize(600,1000)
         self.formLayoutBox = QGroupBox()
 
         self.formLayout2 = QFormLayout()
@@ -103,12 +103,49 @@ class Adder(QDialog):
         self.detailLayoutLaptop = QGroupBox()
         self.detailLayoutTelephone = QGroupBox()
 
+
+        self.formLayoutBox3 = QGroupBox()
+        self.formLayout3 = QGridLayout()
+        self.empList = QComboBox()
+        self.addSome = QPlainTextEdit()
+        self.labelUwag = QLabel("Dodatkowe uwagi")
+        self.labelAcc = QLabel("Urządzenie przyjął")
+        self.formLayout3.addWidget(self.labelUwag, 1, 1)
+        self.formLayout3.addWidget(self.labelAcc, 1, 2)
+        self.formLayout3.addWidget(self.empList, 2, 2)
+        self.formLayout3.addWidget(self.addSome, 2, 1)
+        self.formLayoutBox3.setLayout(self.formLayout3)
+
+        self.formLayout = QFormLayout()
+        self.lineModel = QLineEdit()
+        self.lineNumber = QLineEdit()
+        self.lineClient = QLineEdit()
+
+        self.buttonFinish = QPushButton("Dodaj potwierdzenie")
+
+        self.lineClientNumber = QLineEdit()
+        self.formLayout.addRow(
+            QLabel("Nazwa/model urządzenia"), self.lineModel
+        )
+        self.formLayout.addRow(
+            QLabel("Numer seryjny urządzenia"), self.lineNumber
+        )
+        self.formLayout.addRow(
+            QLabel("Nazwa klienta"), self.lineClient
+        )
+        self.formLayout.addRow(
+            QLabel("Numer kontaktowy"), self.lineClientNumber
+        )
+        self.formLayoutBox.setLayout(self.formLayout)
+
+        self.mainLayout.addWidget(self.formLayoutBox)
+
         # drukarka laserowa
         self.layoutLaser = QVBoxLayout()
         self.laserButtons = {
             "power": QCheckBox("Kabel zasilający"),
             "signal": QCheckBox("Kabel sygnałowy"),
-            "black_toner" : QCheckBox("Czarny toner"),
+            "black_toner": QCheckBox("Czarny toner"),
             "color_toner": QCheckBox("Kolorowy toner"),
             "packing": QCheckBox("Opakowanie")
         }
@@ -135,7 +172,7 @@ class Adder(QDialog):
             "power": QCheckBox("Kabel zasilający"),
             "signal": QCheckBox("Kabel sygnałowy"),
             "power_box": QCheckBox("Zasilacz"),
-            "black_ink" : QCheckBox("Czarny tusz"),
+            "black_ink": QCheckBox("Czarny tusz"),
             "color_ink": QCheckBox("Kolorowy tusz"),
             "packing": QCheckBox("Opakowanie")
         }
@@ -174,41 +211,6 @@ class Adder(QDialog):
         self.detailLayoutLaptop.hide()
         self.detailLayoutLaser.hide()
         self.detailLayoutPoint.hide()
-
-        self.formLayoutBox3 = QGroupBox()
-        self.formLayout3 = QGridLayout()
-        self.empList = QComboBox()
-        self.addSome = QPlainTextEdit()
-        self.labelUwag = QLabel("Dodatkowe uwagi")
-        self.labelAcc = QLabel("Urządzenie przyjął")
-        self.formLayout3.addWidget(self.labelUwag, 1, 1)
-        self.formLayout3.addWidget(self.labelAcc, 1, 2)
-        self.formLayout3.addWidget(self.empList, 2, 2)
-        self.formLayout3.addWidget(self.addSome, 2, 1)
-        self.formLayoutBox3.setLayout(self.formLayout3)
-
-        self.formLayout = QFormLayout()
-        self.lineModel = QLineEdit()
-        self.lineNumber = QLineEdit()
-        self.lineClient = QLineEdit()
-
-        self.buttonFinish = QPushButton("Dodaj potwierdzenie")
-
-        self.lineClientNumber = QLineEdit()
-        self.formLayout.addRow(
-            QLabel("Nazwa/model urządzenia"), self.lineModel
-        )
-        self.formLayout.addRow(
-            QLabel("Numer seryjny urządzenia"), self.lineNumber
-        )
-        self.formLayout.addRow(
-            QLabel("Nazwa klienta"), self.lineClient
-        )
-        self.formLayout.addRow(
-            QLabel("Numer kontaktowy"), self.lineClientNumber
-        )
-        self.formLayoutBox.setLayout(self.formLayout)
-        self.mainLayout.addWidget(self.formLayoutBox)
         self.mainLayout.addWidget(self.formLayoutBox2)
         self.mainLayout.addWidget(self.formLayoutBox3)
 
