@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
                              QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QMainWindow, QPlainTextEdit,
-                             QHBoxLayout, QGridLayout, QComboBox, QErrorMessage, QMessageBox)
+                             QHBoxLayout, QGridLayout, QComboBox, QErrorMessage, QMessageBox, QCheckBox)
 import qtmodern.styles
 import qtmodern.windows
 import valid
@@ -70,6 +70,15 @@ class Adder(QDialog):
         self.add()
         # jarkowe wstawianie do bazki
 
+    def set_checkboxes(self):
+        types = [self.detailLayoutInk, self.detailLayoutLaser, self.detailLayoutPoint, self.detailLayoutLaptop, self.detailLayoutTelephone]
+        for i in range(0, len(types)):
+            types[i].hide()
+
+        print(self.typeList.currentIndex())
+        types[self.typeList.currentIndex()].show()
+        return
+
     def __init__(self, parent=None):
         super(Adder, self).__init__(parent)
 
@@ -87,6 +96,84 @@ class Adder(QDialog):
         self.typeLabel = QLabel("Typ przedmiotu")
         self.mainLayout.addWidget(self.typeLabel)
         self.mainLayout.addWidget(self.typeList)
+
+        self.detailLayoutLaser = QGroupBox()
+        self.detailLayoutInk = QGroupBox()
+        self.detailLayoutPoint = QGroupBox()
+        self.detailLayoutLaptop = QGroupBox()
+        self.detailLayoutTelephone = QGroupBox()
+
+        # drukarka laserowa
+        self.layoutLaser = QVBoxLayout()
+        self.laserButtons = {
+            "power": QCheckBox("Kabel zasilający"),
+            "signal": QCheckBox("Kabel sygnałowy"),
+            "black_toner" : QCheckBox("Czarny toner"),
+            "color_toner": QCheckBox("Kolorowy toner"),
+            "packing": QCheckBox("Opakowanie")
+        }
+        for key in self.laserButtons:
+            self.layoutLaser.addWidget(self.laserButtons[key])
+        self.detailLayoutLaser.setLayout(self.layoutLaser)
+        self.mainLayout.addWidget(self.detailLayoutLaser)
+        # drukarka igłowa
+        self.layoutPoint = QVBoxLayout()
+        self.pointButtons = {
+            "power": QCheckBox("Kabel zasilający"),
+            "signal": QCheckBox("Kabel sygnałowy"),
+            "tape": QCheckBox("Taśma barwiąca"),
+            "power_box": QCheckBox("Zasilacz"),
+            "packing": QCheckBox("Opakowanie")
+        }
+        for key in self.pointButtons:
+            self.layoutPoint.addWidget(self.pointButtons[key])
+        self.detailLayoutPoint.setLayout(self.layoutPoint)
+        self.mainLayout.addWidget(self.detailLayoutPoint)
+        # drukarka atramentowa
+        self.layoutInk = QVBoxLayout()
+        self.inkButtons = {
+            "power": QCheckBox("Kabel zasilający"),
+            "signal": QCheckBox("Kabel sygnałowy"),
+            "power_box": QCheckBox("Zasilacz"),
+            "black_ink" : QCheckBox("Czarny tusz"),
+            "color_ink": QCheckBox("Kolorowy tusz"),
+            "packing": QCheckBox("Opakowanie")
+        }
+        for key in self.inkButtons:
+            self.layoutInk.addWidget(self.inkButtons[key])
+        self.detailLayoutInk.setLayout(self.layoutInk)
+        self.mainLayout.addWidget(self.detailLayoutInk)
+        # laptop
+        self.layoutLaptop = QVBoxLayout()
+        self.laptopButtons = {
+            "power": QCheckBox("Kabel zasilający"),
+            "power_box": QCheckBox("Zasilacz"),
+            "mouse": QCheckBox("Mysz USB"),
+            "packing": QCheckBox("Opakowanie")
+        }
+        for key in self.laptopButtons:
+            self.layoutLaptop.addWidget(self.laptopButtons[key])
+        self.detailLayoutLaptop.setLayout(self.layoutLaptop)
+        self.mainLayout.addWidget(self.detailLayoutLaptop)
+        # komórka
+        self.layoutPhone = QVBoxLayout()
+        self.phoneButtons = {
+            "power": QCheckBox("Kabel zasilający"),
+            "charger": QCheckBox("Ładowarka"),
+            "case": QCheckBox("Obudowa"),
+            "mem_card": QCheckBox("Karta pamięci"),
+            "sim_card": QCheckBox("Karta SIM"),
+            "packing": QCheckBox("Opakowanie")
+        }
+        for key in self.phoneButtons:
+            self.layoutPhone.addWidget(self.phoneButtons[key])
+        self.detailLayoutTelephone.setLayout(self.layoutPhone)
+        self.mainLayout.addWidget(self.detailLayoutTelephone)
+
+        self.detailLayoutTelephone.hide()
+        self.detailLayoutLaptop.hide()
+        self.detailLayoutLaser.hide()
+        self.detailLayoutPoint.hide()
 
         self.formLayoutBox3 = QGroupBox()
         self.formLayout3 = QGridLayout()
@@ -138,6 +225,7 @@ class Adder(QDialog):
         self.typeList.addItem("Telefon")
 
         # adding employees from db
+        self.typeList.currentIndexChanged.connect(self.set_checkboxes)
 
         for i in employees:
             self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
