@@ -51,6 +51,84 @@ class Adder(QDialog):
                                       opis_naprawy="",
                                       id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
         print(database.get_all_pracownicy())
+
+        # drukarka atramentowa
+        if self.typeList.currentIndex() == 0:
+            check_list = {}
+            for key in self.inkButtons:
+                if self.inkButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_drukarka_atramentowa(typ=types[self.typeList.currentIndex()],
+                                                 kabel_sygn=check_list["signal"],
+                                                 kabel_zas=check_list["power"],
+                                                 zasilacz=check_list["power_box"],
+                                                 opakowanie=check_list["packing"],
+                                                 tusz_bk=check_list["black_ink"],
+                                                 tusz_col=check_list["color_ink"]
+                                                 )
+        # drukarka laserowa
+        if self.typeList.currentIndex() == 1:
+            check_list = {}
+            for key in self.laserButtons:
+                if self.laserButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_drukarka_laserowa(typ=types[self.typeList.currentIndex()],
+                                              kabel_sygn=check_list["signal"],
+                                              kabel_zas=check_list["power"],
+                                              toner_bk=check_list["black_toner"],
+                                              toner_col=check_list["color_toner"],
+                                              opakowanie=check_list["packing"])
+        # drukarka igłowa
+        if self.typeList.currentIndex() == 2:
+            check_list = {}
+            for key in self.pointButtons:
+                if self.pointButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_drukarka_iglowa(typ=types[self.typeList.currentIndex()],
+                                            kabel_sygn=check_list["signal"],
+                                            kabel_zas=check_list["power"],
+                                            tasma=check_list["tape"],
+                                            zasilacz=check_list["power_box"],
+                                            opakowanie=check_list["packing"])
+        # laptop
+        if self.typeList.currentIndex() == 3:
+            check_list = {}
+            for key in self.laptopButtons:
+                if self.laptopButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_laptop(typ=types[self.typeList.currentIndex()],
+                                   kabel_zas=check_list["power"],
+                                   mysz=check_list["mouse"],
+                                   zasilacz=check_list["power_box"],
+                                   opakowanie=check_list["packing"] )
+        # telefon
+        if self.typeList.currentIndex() == 4:
+            check_list = {}
+            for key in self.phoneButtons:
+                if self.phoneButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_telefon(typ=types[self.typeList.currentIndex()],
+                                    kabel_zas=check_list["power"],
+                                    karta_pamieci=check_list["mem_card"],
+                                    karta_sim=check_list["sim_card"],
+                                    opakowanie=check_list["packing"],
+                                    case_ob=check_list["case"],
+                                    ladowarka=check_list["charger"])
         self.destroy()
 
     def validate(self):
@@ -71,7 +149,8 @@ class Adder(QDialog):
         # jarkowe wstawianie do bazki
 
     def set_checkboxes(self):
-        types = [self.detailLayoutInk, self.detailLayoutLaser, self.detailLayoutPoint, self.detailLayoutLaptop, self.detailLayoutTelephone]
+        types = [self.detailLayoutInk, self.detailLayoutLaser, self.detailLayoutPoint, self.detailLayoutLaptop,
+                 self.detailLayoutTelephone]
         for i in range(0, len(types)):
             types[i].hide()
 
@@ -83,7 +162,7 @@ class Adder(QDialog):
         super(Adder, self).__init__(parent)
 
         self.mainLayout = QVBoxLayout()
-        self.setFixedSize(600,1000)
+        self.setFixedSize(600, 1000)
         self.formLayoutBox = QGroupBox()
 
         self.formLayout2 = QFormLayout()
@@ -102,7 +181,6 @@ class Adder(QDialog):
         self.detailLayoutPoint = QGroupBox()
         self.detailLayoutLaptop = QGroupBox()
         self.detailLayoutTelephone = QGroupBox()
-
 
         self.formLayoutBox3 = QGroupBox()
         self.formLayout3 = QGridLayout()
