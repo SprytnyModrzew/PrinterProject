@@ -10,6 +10,7 @@ import db
 from datetime import date
 
 database = db.DataBase()
+
 employees = database.get_all_pracownicy()
 
 
@@ -345,6 +346,7 @@ class Editor(FillForm):
         self.lineClientNumber.setText(str(y["Nr_tel"]))
         self.lineNumber.setText(y["Numer_seryjny"])
         self.lineModel.setText(y["Nazwa_urzadzenia"])
+        self.repairSome.setPlainText(y["Opis_naprawy"])
 
         if y['Typ_urzadzenia'] == 'drukarka_atramentowa':
             self.typeList.setCurrentIndex(0)
@@ -520,8 +522,10 @@ class Searcher(QDialog):
             "Mysz_usb": "Mysz USB",
             "Case_obudowa": "Obudowa",
             "Karta_pamieci": "Karta pamięci",
-            "Karta_sim": "Karta SIM"
+            "Karta_sim": "Karta SIM",
+            "Ladowarka":"Ładowarka"
         }
+        print(y)
         self.table.setRowCount(len(y))
         self.table.setColumnCount(11)
         self.table.setHorizontalHeaderItem(0, QTableWidgetItem("Nr potwierdzenia"))
@@ -726,6 +730,7 @@ class Adder(FillForm):
                                     opakowanie=check_list["packing"],
                                     case_ob=check_list["case"],
                                     ladowarka=check_list["charger"])
+            print(check_list)
         self.destroy()
 
     def __init__(self, parent=None):
