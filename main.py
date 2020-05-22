@@ -39,9 +39,28 @@ class Form(QDialog):
         self.button3.clicked.connect(self.search_window)
 
 
+class Editor(QDialog):
+    def __init__(self, confirm_edit_number, parent=None):
+        super(Editor, self).__init__(parent)
+
+        y = database.get_potwierdzenia_by_id(confirm_edit_number)
+        print(y)
+
+        self.mainLayout = QVBoxLayout()
+        self.textTest = QLabel(str(confirm_edit_number))
+        self.mainLayout.addWidget(self.textTest)
+        self.setLayout(self.mainLayout)
+
+
 class Searcher(QDialog):
+    def edit(self):
+        self.editor = Editor(self.table.item(self.table.currentRow(), 0).text())
+        self.editor.show()
+        self.destroy()
+
     def search_all(self):
         self.display(database.get_potwierdzenia_all())
+
     def search_by_confirm(self):
         x = self.inputConfirm.text()
         if x:
@@ -65,27 +84,26 @@ class Searcher(QDialog):
         self.display(y)
 
     def display(self, y):
-        # todo dodać wszystkie prettyNames
         self.table.clear()
         prettyNames = {
-            "drukarka_laserowa":"Drukarka laserowa",
-            "drukarka_iglowa":"Drukarka igłowa",
-            "drukarka_atramentowa":"Drukarka atramentowa",
-            "laptop":"Laptop",
-            "telefon":"Telefon",
-            "Kabel_zasilajacy":"Kabel zasilający",
-            "Kabel_sygnalowy":"Kabel sygnałowy",
-            "Toner_czarny":"Toner czarny",
-            "Toner_kolorowy":"Toner kolorowy",
+            "drukarka_laserowa": "Drukarka laserowa",
+            "drukarka_iglowa": "Drukarka igłowa",
+            "drukarka_atramentowa": "Drukarka atramentowa",
+            "laptop": "Laptop",
+            "telefon": "Telefon",
+            "Kabel_zasilajacy": "Kabel zasilający",
+            "Kabel_sygnalowy": "Kabel sygnałowy",
+            "Toner_czarny": "Toner czarny",
+            "Toner_kolorowy": "Toner kolorowy",
             "Opakowanie": "Opakowanie",
             "Zasilacz": "Zasilacz",
-            "Tusz_czarny":"Tusz czarny",
-            "Tusz_kolorowy":"Tusz kolorowy",
-            "Tasma_barwiaca":"Taśma barwiąca",
-            "Mysz_usb":"Mysz USB",
-            "Case_obudowa":"Obudowa",
-            "Karta_pamieci":"Karta pamięci",
-            "Karta_sim":"Karta SIM"
+            "Tusz_czarny": "Tusz czarny",
+            "Tusz_kolorowy": "Tusz kolorowy",
+            "Tasma_barwiaca": "Taśma barwiąca",
+            "Mysz_usb": "Mysz USB",
+            "Case_obudowa": "Obudowa",
+            "Karta_pamieci": "Karta pamięci",
+            "Karta_sim": "Karta SIM"
         }
         self.table.setRowCount(len(y))
         self.table.setColumnCount(11)
@@ -123,12 +141,14 @@ class Searcher(QDialog):
             self.table.setItem(i, 10, QTableWidgetItem(y[i]["Opis_naprawy"]))
         self.table.resizeColumnsToContents()
 
-
     def __init__(self, parent=None):
         super(Searcher, self).__init__(parent)
 
+        # works that way, clunky but left it in, i have no other solution i could think of
+        self.editor = Editor(0)
+
         self.setWindowTitle("Wyszukiwanie potwierdzeń")
-        self.setMinimumSize(1500,900)
+        self.setMinimumSize(1500, 900)
 
         self.mainLayout = QVBoxLayout()
         self.menuLayout = QHBoxLayout()
@@ -189,6 +209,8 @@ class Searcher(QDialog):
         self.buttonSerial.clicked.connect(self.search_by_serial_number)
         self.buttonShowAll.clicked.connect(self.search_all)
         self.buttonClientName.clicked.connect(self.search_by_client_name)
+
+        self.table.itemDoubleClicked.connect(self.edit)
 
 
 class Adder(QDialog):
@@ -467,6 +489,7 @@ class Adder(QDialog):
 
         for i in employees:
             self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
+
 
 
 if __name__ == '__main__':
