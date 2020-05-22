@@ -187,7 +187,6 @@ class FillForm(QDialog):
         self.mainLayout.addWidget(self.formLayoutBox2)
         self.mainLayout.addWidget(self.formLayoutBox3)
 
-
         self.mainLayout.addWidget(self.buttonFinish)
 
         self.setLayout(self.mainLayout)
@@ -200,7 +199,6 @@ class FillForm(QDialog):
         self.typeList.addItem("Drukarka igłowa")
         self.typeList.addItem("Laptop")
         self.typeList.addItem("Telefon")
-
 
 
 class Form(QDialog):
@@ -231,11 +229,109 @@ class Form(QDialog):
 
 
 class Editor(FillForm):
+    def add(self):
+        types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
+
+        database.update_potwierdzenie(
+            nr_potw=self.confirmNumber,
+            nazwa_urzadzenia=self.lineModel.text(),
+            sn=self.lineNumber.text(),
+            nazwa_klienta=self.lineClient.text(),
+            nr_tel=self.lineClientNumber.text(),
+            opis_uszk=self.description.toPlainText(),
+            informacje_dodatkowe=self.addSome.toPlainText(),
+            opis_naprawy=self.repairSome.toPlainText(),
+            imie=self.empName,
+            nazwisko=self.empSurname)
+
+        # drukarka atramentowa
+        if self.typeList.currentIndex() == 0:
+            check_list = {}
+            for key in self.inkButtons:
+                if self.inkButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.update_drukarka_atramentowa(
+                nr_potw=self.confirmNumber,
+                kabel_sygn=check_list["signal"],
+                kabel_zas=check_list["power"],
+                zasilacz=check_list["power_box"],
+                opakowanie=check_list["packing"],
+                tusz_bk=check_list["black_ink"],
+                tusz_col=check_list["color_ink"]
+            )
+        # drukarka laserowa
+        if self.typeList.currentIndex() == 1:
+            check_list = {}
+            for key in self.laserButtons:
+                if self.laserButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.update_drukarka_laserowa(nr_potw=self.confirmNumber,
+                                              kabel_sygn=check_list["signal"],
+                                              kabel_zas=check_list["power"],
+                                              toner_bk=check_list["black_toner"],
+                                              toner_col=check_list["color_toner"],
+                                              opakowanie=check_list["packing"])
+        # drukarka igłowa
+        if self.typeList.currentIndex() == 2:
+            check_list = {}
+            for key in self.pointButtons:
+                if self.pointButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.update_drukarka_iglowa(nr_potw=self.confirmNumber,
+                                            kabel_sygn=check_list["signal"],
+                                            kabel_zas=check_list["power"],
+                                            tasma=check_list["tape"],
+                                            zasilacz=check_list["power_box"],
+                                            opakowanie=check_list["packing"])
+        # laptop
+        if self.typeList.currentIndex() == 3:
+            check_list = {}
+            for key in self.laptopButtons:
+                if self.laptopButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.update_laptop(nr_potw=self.confirmNumber,
+                                   kabel_zas=check_list["power"],
+                                   mysz=check_list["mouse"],
+                                   zasilacz=check_list["power_box"],
+                                   opakowanie=check_list["packing"])
+        # telefon
+        if self.typeList.currentIndex() == 4:
+            check_list = {}
+            for key in self.phoneButtons:
+                if self.phoneButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.update_telefon(nr_potw=self.confirmNumber,
+                                    kabel_zas=check_list["power"],
+                                    karta_pamieci=check_list["mem_card"],
+                                    karta_sim=check_list["sim_card"],
+                                    opakowanie=check_list["packing"],
+                                    case_ob=check_list["case"],
+                                    ladowarka=check_list["charger"])
+        self.destroy()
+
     def __init__(self, confirm_edit_number, parent=None):
         super(Editor, self).__init__(parent)
 
         y = database.get_potwierdzenia_by_id(confirm_edit_number)[0]
-        print(y)
+        self.confirmNumber = y['Nr_potwierdzenia']
+        self.empName = y["Imie"]
+        self.empSurname = y["Nazwisko"]
+
         self.typeLabel.hide()
         self.typeList.hide()
         self.empList.hide()
@@ -249,6 +345,125 @@ class Editor(FillForm):
         self.lineClientNumber.setText(str(y["Nr_tel"]))
         self.lineNumber.setText(y["Numer_seryjny"])
         self.lineModel.setText(y["Nazwa_urzadzenia"])
+
+        if y['Typ_urzadzenia'] == 'drukarka_atramentowa':
+            self.typeList.setCurrentIndex(0)
+            if y["Dodatkowe"]['Kabel_zasilajacy'] == 'T':
+                self.inkButtons['power'].setChecked(True)
+            else:
+                self.inkButtons['power'].setChecked(False)
+            if y["Dodatkowe"]['Kabel_sygnalowy'] == 'T':
+                self.inkButtons['signal'].setChecked(True)
+            else:
+                self.inkButtons['signal'].setChecked(False)
+            if y["Dodatkowe"]['Zasilacz'] == 'T':
+                self.inkButtons['power_box'].setChecked(True)
+            else:
+                self.inkButtons['power_box'].setChecked(False)
+            if y["Dodatkowe"]['Tusz_czarny'] == 'T':
+                self.inkButtons['black_ink'].setChecked(True)
+            else:
+                self.inkButtons['black_ink'].setChecked(False)
+            if y["Dodatkowe"]['Tusz_kolorowy'] == 'T':
+                self.inkButtons['color_ink'].setChecked(True)
+            else:
+                self.inkButtons['color_ink'].setChecked(False)
+            if y["Dodatkowe"]['Opakowanie'] == 'T':
+                self.inkButtons['packing'].setChecked(True)
+            else:
+                self.inkButtons['packing'].setChecked(False)
+
+        if y['Typ_urzadzenia'] == 'drukarka_laserowa':
+            self.typeList.setCurrentIndex(1)
+            if y["Dodatkowe"]['Kabel_zasilajacy'] == 'T':
+                self.laserButtons['power'].setChecked(True)
+            else:
+                self.laserButtons['power'].setChecked(False)
+            if y["Dodatkowe"]['Kabel_sygnalowy'] == 'T':
+                self.laserButtons['signal'].setChecked(True)
+            else:
+                self.laserButtons['signal'].setChecked(False)
+            if y["Dodatkowe"]['Toner_czarny'] == 'T':
+                self.laserButtons['black_toner'].setChecked(True)
+            else:
+                self.laserButtons['black_toner'].setChecked(False)
+            if y["Dodatkowe"]['Toner_kolorowy'] == 'T':
+                self.laserButtons['color_toner'].setChecked(True)
+            else:
+                self.laserButtons['color_toner'].setChecked(False)
+            if y["Dodatkowe"]['Opakowanie'] == 'T':
+                self.laserButtons['packing'].setChecked(True)
+            else:
+                self.laserButtons['packing'].setChecked(False)
+
+        if y['Typ_urzadzenia'] == 'drukarka_iglowa':
+            self.typeList.setCurrentIndex(2)
+            if y["Dodatkowe"]['Kabel_zasilajacy'] == 'T':
+                self.pointButtons['power'].setChecked(True)
+            else:
+                self.pointButtons['power'].setChecked(False)
+            if y["Dodatkowe"]['Kabel_sygnalowy'] == 'T':
+                self.pointButtons['signal'].setChecked(True)
+            else:
+                self.pointButtons['signal'].setChecked(False)
+            if y["Dodatkowe"]['Zasilacz'] == 'T':
+                self.pointButtons['power_box'].setChecked(True)
+            else:
+                self.pointButtons['power_box'].setChecked(False)
+            if y["Dodatkowe"]['Tasma_barwiaca'] == 'T':
+                self.pointButtons['tape'].setChecked(True)
+            else:
+                self.pointButtons['tape'].setChecked(False)
+            if y["Dodatkowe"]['Opakowanie'] == 'T':
+                self.pointButtons['packing'].setChecked(True)
+            else:
+                self.pointButtons['packing'].setChecked(False)
+
+        if y['Typ_urzadzenia'] == 'laptop':
+            self.typeList.setCurrentIndex(3)
+            if y["Dodatkowe"]['Kabel_zasilajacy'] == 'T':
+                self.laptopButtons['power'].setChecked(True)
+            else:
+                self.laptopButtons['power'].setChecked(False)
+            if y["Dodatkowe"]['Zasilacz'] == 'T':
+                self.laptopButtons['power_box'].setChecked(True)
+            else:
+                self.laptopButtons['power_box'].setChecked(False)
+            if y["Dodatkowe"]['Mysz_usb'] == 'T':
+                self.laptopButtons['mouse'].setChecked(True)
+            else:
+                self.laptopButtons['mouse'].setChecked(False)
+            if y["Dodatkowe"]['Opakowanie'] == 'T':
+                self.laptopButtons['packing'].setChecked(True)
+            else:
+                self.laptopButtons['packing'].setChecked(False)
+
+        if y['Typ_urzadzenia'] == 'telefon':
+            self.typeList.setCurrentIndex(4)
+            if y["Dodatkowe"]['Kabel_zasilajacy'] == 'T':
+                self.phoneButtons['power'].setChecked(True)
+            else:
+                self.phoneButtons['power'].setChecked(False)
+            if y["Dodatkowe"]['Ladowarka'] == 'T':
+                self.phoneButtons['charger'].setChecked(True)
+            else:
+                self.phoneButtons['charger'].setChecked(False)
+            if y["Dodatkowe"]['Karta_sim'] == 'T':
+                self.phoneButtons['sim_card'].setChecked(True)
+            else:
+                self.phoneButtons['sim_card'].setChecked(False)
+            if y["Dodatkowe"]['Karta_pamieci'] == 'T':
+                self.phoneButtons['mem_card'].setChecked(True)
+            else:
+                self.phoneButtons['mem_card'].setChecked(False)
+            if y["Dodatkowe"]['Opakowanie'] == 'T':
+                self.phoneButtons['packing'].setChecked(True)
+            else:
+                self.phoneButtons['packing'].setChecked(False)
+            if y["Dodatkowe"]['Case_obudowa'] == 'T':
+                self.phoneButtons['case'].setChecked(True)
+            else:
+                self.phoneButtons['case'].setChecked(False)
 
 
 class Searcher(QDialog):
