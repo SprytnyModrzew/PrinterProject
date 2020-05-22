@@ -13,303 +13,9 @@ database = db.DataBase()
 employees = database.get_all_pracownicy()
 
 
-class Form(QDialog):
-    def search_window(self):
-        self.searcher.show()
-
-    def add_window(self):
-        self.adder.show()
-
-    def __init__(self, parent=None):
-        super(Form, self).__init__(parent)
-        self.adder = Adder()
-        self.searcher = Searcher()
-        self.button = QPushButton("Dodaj")
-        self.button2 = QPushButton("Edytuj")
-        self.button3 = QPushButton("Szukaj")
-        # Create layout and add widgets
-        layout = QVBoxLayout()
-        layout.addWidget(self.button)
-        layout.addWidget(self.button2)
-        layout.addWidget(self.button3)
-        # Set dialog layout
-        self.setLayout(layout)
-        # Add button signal to greetings slot
-        self.button.clicked.connect(self.add_window)
-        self.button3.clicked.connect(self.search_window)
-
-
-class Editor(QDialog):
-    def __init__(self, confirm_edit_number, parent=None):
-        super(Editor, self).__init__(parent)
-
-        y = database.get_potwierdzenia_by_id(confirm_edit_number)
-        print(y)
-
-        self.mainLayout = QVBoxLayout()
-        self.textTest = QLabel(str(confirm_edit_number))
-        self.mainLayout.addWidget(self.textTest)
-        self.setLayout(self.mainLayout)
-
-
-class Searcher(QDialog):
-    def edit(self):
-        self.editor = Editor(self.table.item(self.table.currentRow(), 0).text())
-        self.editor.show()
-        self.destroy()
-
-    def search_all(self):
-        self.display(database.get_potwierdzenia_all())
-
-    def search_by_confirm(self):
-        x = self.inputConfirm.text()
-        if x:
-            y = database.get_potwierdzenia_by_id(x)
-            self.display(y)
-
-    def search_by_device_name(self):
-        x = self.inputDeviceName.text()
-        y = database.get_potwierdzenia_by_nazwa_urzadzenia(x)
-        self.display(y)
-
-    def search_by_serial_number(self):
-        x = self.inputSerial.text()
-        y = database.get_potwierdzenia_by_sn(x)
-        print(y)
-        self.display(y)
-
-    def search_by_client_name(self):
-        x = self.inputClientName.text()
-        y = database.get_potwierdzenia_by_nazwa_klienta(x)
-        self.display(y)
-
-    def display(self, y):
-        self.table.clear()
-        prettyNames = {
-            "drukarka_laserowa": "Drukarka laserowa",
-            "drukarka_iglowa": "Drukarka igłowa",
-            "drukarka_atramentowa": "Drukarka atramentowa",
-            "laptop": "Laptop",
-            "telefon": "Telefon",
-            "Kabel_zasilajacy": "Kabel zasilający",
-            "Kabel_sygnalowy": "Kabel sygnałowy",
-            "Toner_czarny": "Toner czarny",
-            "Toner_kolorowy": "Toner kolorowy",
-            "Opakowanie": "Opakowanie",
-            "Zasilacz": "Zasilacz",
-            "Tusz_czarny": "Tusz czarny",
-            "Tusz_kolorowy": "Tusz kolorowy",
-            "Tasma_barwiaca": "Taśma barwiąca",
-            "Mysz_usb": "Mysz USB",
-            "Case_obudowa": "Obudowa",
-            "Karta_pamieci": "Karta pamięci",
-            "Karta_sim": "Karta SIM"
-        }
-        self.table.setRowCount(len(y))
-        self.table.setColumnCount(11)
-        self.table.setHorizontalHeaderItem(0, QTableWidgetItem("Nr potwierdzenia"))
-        self.table.setHorizontalHeaderItem(1, QTableWidgetItem("Data"))
-        self.table.setHorizontalHeaderItem(2, QTableWidgetItem("Typ"))
-        self.table.setHorizontalHeaderItem(3, QTableWidgetItem("Nazwa"))
-        self.table.setHorizontalHeaderItem(4, QTableWidgetItem("Numer seryjny"))
-        self.table.setHorizontalHeaderItem(5, QTableWidgetItem("Nazwa klienta"))
-        self.table.setHorizontalHeaderItem(6, QTableWidgetItem("Nr telefonu"))
-        self.table.setHorizontalHeaderItem(7, QTableWidgetItem("Przyjął"))
-        self.table.setHorizontalHeaderItem(8, QTableWidgetItem("Dodatkowe"))
-        self.table.setHorizontalHeaderItem(9, QTableWidgetItem("Opis uszkodzenia"))
-        self.table.setHorizontalHeaderItem(10, QTableWidgetItem("Opis naprawy"))
-        for i in range(0, len(y)):
-            self.table.setItem(i, 0, QTableWidgetItem(str(y[i]["Nr_potwierdzenia"])))
-            self.table.setItem(i, 1, QTableWidgetItem(y[i]["Data"]))
-            self.table.setItem(i, 2, QTableWidgetItem(prettyNames[y[i]["Typ_urzadzenia"]]))
-            self.table.setItem(i, 3, QTableWidgetItem(y[i]["Nazwa_urzadzenia"]))
-            self.table.setItem(i, 4, QTableWidgetItem(y[i]["Numer_seryjny"]))
-            self.table.setItem(i, 5, QTableWidgetItem(y[i]["Nazwa_klienta"]))
-            self.table.setItem(i, 6, QTableWidgetItem(str(y[i]["Nr_tel"])))
-            self.table.setItem(i, 7, QTableWidgetItem(y[i]["Imie"] + " " + y[i]["Nazwisko"]))
-            text = ""
-            count = 0
-            for key in y[i]["Dodatkowe"]:
-                if y[i]["Dodatkowe"][key] == "T":
-                    if count:
-                        text = text + ", " + prettyNames[key]
-                    else:
-                        text = prettyNames[key]
-                    count = count + 1
-            self.table.setItem(i, 8, QTableWidgetItem(text))
-            self.table.setItem(i, 9, QTableWidgetItem(y[i]["Opis_uszkodzenia"]))
-            self.table.setItem(i, 10, QTableWidgetItem(y[i]["Opis_naprawy"]))
-        self.table.resizeColumnsToContents()
-
-    def __init__(self, parent=None):
-        super(Searcher, self).__init__(parent)
-
-        # works that way, clunky but left it in, i have no other solution i could think of
-        self.editor = Editor(0)
-
-        self.setWindowTitle("Wyszukiwanie potwierdzeń")
-        self.setMinimumSize(1500, 900)
-
-        self.mainLayout = QVBoxLayout()
-        self.menuLayout = QHBoxLayout()
-
-        # szukanie po potwierdzeniu
-        self.confirmLayout = QVBoxLayout()
-        self.labelConfirm = QLabel("Numer potwierdzenia:")
-        self.inputConfirm = QLineEdit()
-        self.buttonConfirm = QPushButton("Szukaj")
-        self.confirmLayout.addWidget(self.labelConfirm)
-        self.confirmLayout.addWidget(self.inputConfirm)
-        self.confirmLayout.addWidget(self.buttonConfirm)
-
-        self.menuLayout.addLayout(self.confirmLayout)
-        # szukanie po nr seryjnym
-        self.serialLayout = QVBoxLayout()
-        self.labelSerial = QLabel("Numer seryjny:")
-        self.inputSerial = QLineEdit()
-        self.buttonSerial = QPushButton("Szukaj")
-        self.serialLayout.addWidget(self.labelSerial)
-        self.serialLayout.addWidget(self.inputSerial)
-        self.serialLayout.addWidget(self.buttonSerial)
-
-        self.menuLayout.addLayout(self.serialLayout)
-        # szukanie po nazwie
-        self.deviceNameLayout = QVBoxLayout()
-        self.labelDeviceName = QLabel("Nazwa urzadzenia:")
-        self.inputDeviceName = QLineEdit()
-        self.buttonDeviceName = QPushButton("Szukaj")
-        self.deviceNameLayout.addWidget(self.labelDeviceName)
-        self.deviceNameLayout.addWidget(self.inputDeviceName)
-        self.deviceNameLayout.addWidget(self.buttonDeviceName)
-
-        self.menuLayout.addLayout(self.deviceNameLayout)
-
-        # nazwa klienta
-        self.clientNameLayout = QVBoxLayout()
-        self.labelClientName = QLabel("Nazwa klienta:")
-        self.inputClientName = QLineEdit()
-        self.buttonClientName = QPushButton("Szukaj")
-        self.clientNameLayout.addWidget(self.labelClientName)
-        self.clientNameLayout.addWidget(self.inputClientName)
-        self.clientNameLayout.addWidget(self.buttonClientName)
-
-        self.menuLayout.addLayout(self.clientNameLayout)
-
-        self.mainLayout.addLayout(self.menuLayout)
-
-        self.table = QTableWidget()
-        self.mainLayout.addWidget(self.table)
-
-        self.buttonShowAll = QPushButton("Pokaż wszystkie wpisy")
-        self.mainLayout.addWidget(self.buttonShowAll)
-
-        self.setLayout(self.mainLayout)
-        self.buttonConfirm.clicked.connect(self.search_by_confirm)
-        self.buttonDeviceName.clicked.connect(self.search_by_device_name)
-        self.buttonSerial.clicked.connect(self.search_by_serial_number)
-        self.buttonShowAll.clicked.connect(self.search_all)
-        self.buttonClientName.clicked.connect(self.search_by_client_name)
-
-        self.table.itemDoubleClicked.connect(self.edit)
-
-
-class Adder(QDialog):
+class FillForm(QDialog):
     def add(self):
-        types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
-
-        print(types[self.typeList.currentIndex()])
-        print(self.lineClientNumber.text())
-        print(employees[self.empList.currentIndex()]["Id_pracownika"])
-        database.insert_potwierdzenie(data=date.today(),
-                                      typ=types[self.typeList.currentIndex()],
-                                      nazwa_urzadzenia=self.lineModel.text(),
-                                      sn=self.lineNumber.text(),
-                                      nazwa_klienta=self.lineClient.text(),
-                                      nr_tel=self.lineClientNumber.text(),
-                                      opis_uszk=self.description.toPlainText(),
-                                      informacje_dodatkowe=self.addSome.toPlainText(),
-                                      opis_naprawy="",
-                                      id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
-        print(database.get_all_pracownicy())
-
-        # drukarka atramentowa
-        if self.typeList.currentIndex() == 0:
-            check_list = {}
-            for key in self.inkButtons:
-                if self.inkButtons[key].isChecked():
-                    check_list[key] = "T"
-                else:
-                    check_list[key] = "N"
-            print(check_list)
-            database.insert_drukarka_atramentowa(typ=types[self.typeList.currentIndex()],
-                                                 kabel_sygn=check_list["signal"],
-                                                 kabel_zas=check_list["power"],
-                                                 zasilacz=check_list["power_box"],
-                                                 opakowanie=check_list["packing"],
-                                                 tusz_bk=check_list["black_ink"],
-                                                 tusz_col=check_list["color_ink"]
-                                                 )
-        # drukarka laserowa
-        if self.typeList.currentIndex() == 1:
-            check_list = {}
-            for key in self.laserButtons:
-                if self.laserButtons[key].isChecked():
-                    check_list[key] = "T"
-                else:
-                    check_list[key] = "N"
-            print(check_list)
-            database.insert_drukarka_laserowa(typ=types[self.typeList.currentIndex()],
-                                              kabel_sygn=check_list["signal"],
-                                              kabel_zas=check_list["power"],
-                                              toner_bk=check_list["black_toner"],
-                                              toner_col=check_list["color_toner"],
-                                              opakowanie=check_list["packing"])
-        # drukarka igłowa
-        if self.typeList.currentIndex() == 2:
-            check_list = {}
-            for key in self.pointButtons:
-                if self.pointButtons[key].isChecked():
-                    check_list[key] = "T"
-                else:
-                    check_list[key] = "N"
-            print(check_list)
-            database.insert_drukarka_iglowa(typ=types[self.typeList.currentIndex()],
-                                            kabel_sygn=check_list["signal"],
-                                            kabel_zas=check_list["power"],
-                                            tasma=check_list["tape"],
-                                            zasilacz=check_list["power_box"],
-                                            opakowanie=check_list["packing"])
-        # laptop
-        if self.typeList.currentIndex() == 3:
-            check_list = {}
-            for key in self.laptopButtons:
-                if self.laptopButtons[key].isChecked():
-                    check_list[key] = "T"
-                else:
-                    check_list[key] = "N"
-            print(check_list)
-            database.insert_laptop(typ=types[self.typeList.currentIndex()],
-                                   kabel_zas=check_list["power"],
-                                   mysz=check_list["mouse"],
-                                   zasilacz=check_list["power_box"],
-                                   opakowanie=check_list["packing"])
-        # telefon
-        if self.typeList.currentIndex() == 4:
-            check_list = {}
-            for key in self.phoneButtons:
-                if self.phoneButtons[key].isChecked():
-                    check_list[key] = "T"
-                else:
-                    check_list[key] = "N"
-            print(check_list)
-            database.insert_telefon(typ=types[self.typeList.currentIndex()],
-                                    kabel_zas=check_list["power"],
-                                    karta_pamieci=check_list["mem_card"],
-                                    karta_sim=check_list["sim_card"],
-                                    opakowanie=check_list["packing"],
-                                    case_ob=check_list["case"],
-                                    ladowarka=check_list["charger"])
-        self.destroy()
+        return
 
     def validate(self):
         try:
@@ -339,15 +45,17 @@ class Adder(QDialog):
         return
 
     def __init__(self, parent=None):
-        super(Adder, self).__init__(parent)
+        super(FillForm, self).__init__(parent)
 
         self.mainLayout = QVBoxLayout()
         self.setFixedSize(600, 1000)
         self.formLayoutBox = QGroupBox()
 
         self.formLayout2 = QFormLayout()
-        self.formLayoutBox2 = QGroupBox("Opis uszkodzenia")
+        self.formLayoutBox2 = QGroupBox()
         self.description = QPlainTextEdit()
+        self.labelDesc = QLabel("Opis uszkodzenia")
+        self.formLayout2.addWidget(self.labelDesc)
         self.formLayout2.addWidget(self.description)
         self.formLayoutBox2.setLayout(self.formLayout2)
 
@@ -368,10 +76,17 @@ class Adder(QDialog):
         self.addSome = QPlainTextEdit()
         self.labelUwag = QLabel("Dodatkowe uwagi")
         self.labelAcc = QLabel("Urządzenie przyjął")
+        self.labelRepair = QLabel("Opis naprawy")
+        self.repairSome = QPlainTextEdit()
+
         self.formLayout3.addWidget(self.labelUwag, 1, 1)
         self.formLayout3.addWidget(self.labelAcc, 1, 2)
         self.formLayout3.addWidget(self.empList, 2, 2)
         self.formLayout3.addWidget(self.addSome, 2, 1)
+
+        self.formLayout2.addWidget(self.labelRepair)
+        self.formLayout2.addWidget(self.repairSome)
+
         self.formLayoutBox3.setLayout(self.formLayout3)
 
         self.formLayout = QFormLayout()
@@ -472,11 +187,13 @@ class Adder(QDialog):
         self.mainLayout.addWidget(self.formLayoutBox2)
         self.mainLayout.addWidget(self.formLayoutBox3)
 
+
         self.mainLayout.addWidget(self.buttonFinish)
 
         self.setLayout(self.mainLayout)
 
         self.buttonFinish.clicked.connect(self.validate)
+        self.typeList.currentIndexChanged.connect(self.set_checkboxes)
 
         self.typeList.addItem("Drukarka atramentowa")
         self.typeList.addItem("Drukarka laserowa")
@@ -484,12 +201,324 @@ class Adder(QDialog):
         self.typeList.addItem("Laptop")
         self.typeList.addItem("Telefon")
 
-        # adding employees from db
-        self.typeList.currentIndexChanged.connect(self.set_checkboxes)
 
+
+class Form(QDialog):
+    def search_window(self):
+        self.searcher.show()
+
+    def add_window(self):
+        self.adder.show()
+
+    def __init__(self, parent=None):
+        super(Form, self).__init__(parent)
+        self.adder = Adder()
+        self.searcher = Searcher()
+        self.button = QPushButton("Dodaj")
+        self.button2 = QPushButton("Edytuj")
+        self.button3 = QPushButton("Szukaj")
+        # Create layout and add widgets
+        layout = QVBoxLayout()
+        layout.addWidget(self.button)
+        layout.addWidget(self.button2)
+        layout.addWidget(self.button3)
+        # Set dialog layout
+        self.setLayout(layout)
+        # Add button signal to greetings slot
+
+        self.button.clicked.connect(self.add_window)
+        self.button3.clicked.connect(self.search_window)
+
+
+class Editor(FillForm):
+    def __init__(self, confirm_edit_number, parent=None):
+        super(Editor, self).__init__(parent)
+
+        y = database.get_potwierdzenia_by_id(confirm_edit_number)[0]
+        print(y)
+        self.typeLabel.hide()
+        self.typeList.hide()
+        self.empList.hide()
+        self.labelAcc.hide()
+
+        # filling out the gaps
+        self.addSome.setPlainText(y["Informacje_dodatkowe"])
+        self.description.setPlainText(y["Opis_uszkodzenia"])
+
+        self.lineClient.setText(y["Nazwa_klienta"])
+        self.lineClientNumber.setText(str(y["Nr_tel"]))
+        self.lineNumber.setText(y["Numer_seryjny"])
+        self.lineModel.setText(y["Nazwa_urzadzenia"])
+
+
+class Searcher(QDialog):
+    def edit(self):
+        self.editor = Editor(self.table.item(self.table.currentRow(), 0).text())
+        self.editor.show()
+        self.table.clear()
+        self.table.setColumnCount(0)
+        self.table.setRowCount(0)
+        self.destroy()
+
+    def search_all(self):
+        self.display(database.get_potwierdzenia_all())
+
+    def search_by_confirm(self):
+        x = self.inputConfirm.text()
+        if x:
+            y = database.get_potwierdzenia_by_id(x)
+            self.display(y)
+
+    def search_by_device_name(self):
+        x = self.inputDeviceName.text()
+        y = database.get_potwierdzenia_by_nazwa_urzadzenia(x)
+        self.display(y)
+
+    def search_by_serial_number(self):
+        x = self.inputSerial.text()
+        y = database.get_potwierdzenia_by_sn(x)
+        print(y)
+        self.display(y)
+
+    def search_by_client_name(self):
+        x = self.inputClientName.text()
+        y = database.get_potwierdzenia_by_nazwa_klienta(x)
+        self.display(y)
+
+    def display(self, y):
+        self.table.clear()
+        prettyNames = {
+            "drukarka_laserowa": "Drukarka laserowa",
+            "drukarka_iglowa": "Drukarka igłowa",
+            "drukarka_atramentowa": "Drukarka atramentowa",
+            "laptop": "Laptop",
+            "telefon": "Telefon",
+            "Kabel_zasilajacy": "Kabel zasilający",
+            "Kabel_sygnalowy": "Kabel sygnałowy",
+            "Toner_czarny": "Toner czarny",
+            "Toner_kolorowy": "Toner kolorowy",
+            "Opakowanie": "Opakowanie",
+            "Zasilacz": "Zasilacz",
+            "Tusz_czarny": "Tusz czarny",
+            "Tusz_kolorowy": "Tusz kolorowy",
+            "Tasma_barwiaca": "Taśma barwiąca",
+            "Mysz_usb": "Mysz USB",
+            "Case_obudowa": "Obudowa",
+            "Karta_pamieci": "Karta pamięci",
+            "Karta_sim": "Karta SIM"
+        }
+        self.table.setRowCount(len(y))
+        self.table.setColumnCount(11)
+        self.table.setHorizontalHeaderItem(0, QTableWidgetItem("Nr potwierdzenia"))
+        self.table.setHorizontalHeaderItem(1, QTableWidgetItem("Data"))
+        self.table.setHorizontalHeaderItem(2, QTableWidgetItem("Typ"))
+        self.table.setHorizontalHeaderItem(3, QTableWidgetItem("Nazwa"))
+        self.table.setHorizontalHeaderItem(4, QTableWidgetItem("Numer seryjny"))
+        self.table.setHorizontalHeaderItem(5, QTableWidgetItem("Nazwa klienta"))
+        self.table.setHorizontalHeaderItem(6, QTableWidgetItem("Nr telefonu"))
+        self.table.setHorizontalHeaderItem(7, QTableWidgetItem("Przyjął"))
+        self.table.setHorizontalHeaderItem(8, QTableWidgetItem("Dodatkowe"))
+        self.table.setHorizontalHeaderItem(9, QTableWidgetItem("Opis uszkodzenia"))
+        self.table.setHorizontalHeaderItem(10, QTableWidgetItem("Opis naprawy"))
+        for i in range(0, len(y)):
+            self.table.setItem(i, 0, QTableWidgetItem(str(y[i]["Nr_potwierdzenia"])))
+            self.table.setItem(i, 1, QTableWidgetItem(y[i]["Data"]))
+            self.table.setItem(i, 2, QTableWidgetItem(prettyNames[y[i]["Typ_urzadzenia"]]))
+            self.table.setItem(i, 3, QTableWidgetItem(y[i]["Nazwa_urzadzenia"]))
+            self.table.setItem(i, 4, QTableWidgetItem(y[i]["Numer_seryjny"]))
+            self.table.setItem(i, 5, QTableWidgetItem(y[i]["Nazwa_klienta"]))
+            self.table.setItem(i, 6, QTableWidgetItem(str(y[i]["Nr_tel"])))
+            self.table.setItem(i, 7, QTableWidgetItem(y[i]["Imie"] + " " + y[i]["Nazwisko"]))
+            text = ""
+            count = 0
+            for key in y[i]["Dodatkowe"]:
+                if y[i]["Dodatkowe"][key] == "T":
+                    if count:
+                        text = text + ", " + prettyNames[key]
+                    else:
+                        text = prettyNames[key]
+                    count = count + 1
+            self.table.setItem(i, 8, QTableWidgetItem(text))
+            self.table.setItem(i, 9, QTableWidgetItem(y[i]["Opis_uszkodzenia"]))
+            self.table.setItem(i, 10, QTableWidgetItem(y[i]["Opis_naprawy"]))
+        self.table.resizeColumnsToContents()
+
+    def __init__(self, parent=None):
+        super(Searcher, self).__init__(parent)
+
+        # works that way, clunky but left it in, i have no other solution i could think of
+        # self.editor = Editor(0)
+
+        self.setWindowTitle("Wyszukiwanie potwierdzeń")
+        self.setMinimumSize(1500, 900)
+
+        self.mainLayout = QVBoxLayout()
+        self.menuLayout = QHBoxLayout()
+
+        # szukanie po potwierdzeniu
+        self.confirmLayout = QVBoxLayout()
+        self.labelConfirm = QLabel("Numer potwierdzenia:")
+        self.inputConfirm = QLineEdit()
+        self.buttonConfirm = QPushButton("Szukaj")
+        self.confirmLayout.addWidget(self.labelConfirm)
+        self.confirmLayout.addWidget(self.inputConfirm)
+        self.confirmLayout.addWidget(self.buttonConfirm)
+
+        self.menuLayout.addLayout(self.confirmLayout)
+        # szukanie po nr seryjnym
+        self.serialLayout = QVBoxLayout()
+        self.labelSerial = QLabel("Numer seryjny:")
+        self.inputSerial = QLineEdit()
+        self.buttonSerial = QPushButton("Szukaj")
+        self.serialLayout.addWidget(self.labelSerial)
+        self.serialLayout.addWidget(self.inputSerial)
+        self.serialLayout.addWidget(self.buttonSerial)
+
+        self.menuLayout.addLayout(self.serialLayout)
+        # szukanie po nazwie
+        self.deviceNameLayout = QVBoxLayout()
+        self.labelDeviceName = QLabel("Nazwa urzadzenia:")
+        self.inputDeviceName = QLineEdit()
+        self.buttonDeviceName = QPushButton("Szukaj")
+        self.deviceNameLayout.addWidget(self.labelDeviceName)
+        self.deviceNameLayout.addWidget(self.inputDeviceName)
+        self.deviceNameLayout.addWidget(self.buttonDeviceName)
+
+        self.menuLayout.addLayout(self.deviceNameLayout)
+
+        # nazwa klienta
+        self.clientNameLayout = QVBoxLayout()
+        self.labelClientName = QLabel("Nazwa klienta:")
+        self.inputClientName = QLineEdit()
+        self.buttonClientName = QPushButton("Szukaj")
+        self.clientNameLayout.addWidget(self.labelClientName)
+        self.clientNameLayout.addWidget(self.inputClientName)
+        self.clientNameLayout.addWidget(self.buttonClientName)
+
+        self.menuLayout.addLayout(self.clientNameLayout)
+
+        self.mainLayout.addLayout(self.menuLayout)
+
+        self.table = QTableWidget()
+        self.mainLayout.addWidget(self.table)
+
+        self.buttonShowAll = QPushButton("Pokaż wszystkie wpisy")
+        self.mainLayout.addWidget(self.buttonShowAll)
+
+        self.setLayout(self.mainLayout)
+        self.buttonConfirm.clicked.connect(self.search_by_confirm)
+        self.buttonDeviceName.clicked.connect(self.search_by_device_name)
+        self.buttonSerial.clicked.connect(self.search_by_serial_number)
+        self.buttonShowAll.clicked.connect(self.search_all)
+        self.buttonClientName.clicked.connect(self.search_by_client_name)
+
+        self.table.itemDoubleClicked.connect(self.edit)
+
+
+class Adder(FillForm):
+    def add(self):
+        types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
+
+        print(types[self.typeList.currentIndex()])
+        print(self.lineClientNumber.text())
+        print(employees[self.empList.currentIndex()]["Id_pracownika"])
+        database.insert_potwierdzenie(data=date.today(),
+                                      typ=types[self.typeList.currentIndex()],
+                                      nazwa_urzadzenia=self.lineModel.text(),
+                                      sn=self.lineNumber.text(),
+                                      nazwa_klienta=self.lineClient.text(),
+                                      nr_tel=self.lineClientNumber.text(),
+                                      opis_uszk=self.description.toPlainText(),
+                                      informacje_dodatkowe=self.addSome.toPlainText(),
+                                      opis_naprawy="",
+                                      id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
+        print(database.get_all_pracownicy())
+
+        # drukarka atramentowa
+        if self.typeList.currentIndex() == 0:
+            check_list = {}
+            for key in self.inkButtons:
+                if self.inkButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_drukarka_atramentowa(typ=types[self.typeList.currentIndex()],
+                                                 kabel_sygn=check_list["signal"],
+                                                 kabel_zas=check_list["power"],
+                                                 zasilacz=check_list["power_box"],
+                                                 opakowanie=check_list["packing"],
+                                                 tusz_bk=check_list["black_ink"],
+                                                 tusz_col=check_list["color_ink"]
+                                                 )
+        # drukarka laserowa
+        if self.typeList.currentIndex() == 1:
+            check_list = {}
+            for key in self.laserButtons:
+                if self.laserButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_drukarka_laserowa(typ=types[self.typeList.currentIndex()],
+                                              kabel_sygn=check_list["signal"],
+                                              kabel_zas=check_list["power"],
+                                              toner_bk=check_list["black_toner"],
+                                              toner_col=check_list["color_toner"],
+                                              opakowanie=check_list["packing"])
+        # drukarka igłowa
+        if self.typeList.currentIndex() == 2:
+            check_list = {}
+            for key in self.pointButtons:
+                if self.pointButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_drukarka_iglowa(typ=types[self.typeList.currentIndex()],
+                                            kabel_sygn=check_list["signal"],
+                                            kabel_zas=check_list["power"],
+                                            tasma=check_list["tape"],
+                                            zasilacz=check_list["power_box"],
+                                            opakowanie=check_list["packing"])
+        # laptop
+        if self.typeList.currentIndex() == 3:
+            check_list = {}
+            for key in self.laptopButtons:
+                if self.laptopButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_laptop(typ=types[self.typeList.currentIndex()],
+                                   kabel_zas=check_list["power"],
+                                   mysz=check_list["mouse"],
+                                   zasilacz=check_list["power_box"],
+                                   opakowanie=check_list["packing"])
+        # telefon
+        if self.typeList.currentIndex() == 4:
+            check_list = {}
+            for key in self.phoneButtons:
+                if self.phoneButtons[key].isChecked():
+                    check_list[key] = "T"
+                else:
+                    check_list[key] = "N"
+            print(check_list)
+            database.insert_telefon(typ=types[self.typeList.currentIndex()],
+                                    kabel_zas=check_list["power"],
+                                    karta_pamieci=check_list["mem_card"],
+                                    karta_sim=check_list["sim_card"],
+                                    opakowanie=check_list["packing"],
+                                    case_ob=check_list["case"],
+                                    ladowarka=check_list["charger"])
+        self.destroy()
+
+    def __init__(self, parent=None):
+        super(Adder, self).__init__(parent)
         for i in employees:
             self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
-
+        self.labelRepair.hide()
+        self.repairSome.hide()
 
 
 if __name__ == '__main__':
