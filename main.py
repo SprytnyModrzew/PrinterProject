@@ -1,3 +1,4 @@
+import os
 import sys
 from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
                              QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QMainWindow, QPlainTextEdit,
@@ -10,7 +11,13 @@ import db
 from datetime import date
 
 database = db.DataBase()
-
+if not os.path.exists("potwierdzenia2.db"):
+    print('exists now')
+    database = db.DataBase()
+    database.sql_create_tables()
+else:
+    database = db.DataBase()
+    print('existed')
 employees = database.get_all_pracownicy()
 
 
@@ -211,22 +218,22 @@ class Form(QDialog):
 
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
+        self.setWindowTitle("Menu")
+        self.setMinimumWidth(200)
         self.adder = Adder()
         self.searcher = Searcher()
-        self.button = QPushButton("Dodaj")
-        self.button2 = QPushButton("Edytuj")
-        self.button3 = QPushButton("Szukaj")
+        self.button = QPushButton("Dodaj potwierdzenie")
+        self.button2 = QPushButton("Szukaj potwierdzeń")
         # Create layout and add widgets
         layout = QVBoxLayout()
         layout.addWidget(self.button)
         layout.addWidget(self.button2)
-        layout.addWidget(self.button3)
         # Set dialog layout
         self.setLayout(layout)
         # Add button signal to greetings slot
 
         self.button.clicked.connect(self.add_window)
-        self.button3.clicked.connect(self.search_window)
+        self.button2.clicked.connect(self.search_window)
 
 
 class Editor(FillForm):
@@ -327,6 +334,8 @@ class Editor(FillForm):
 
     def __init__(self, confirm_edit_number, parent=None):
         super(Editor, self).__init__(parent)
+
+        self.setWindowTitle("Edycja potwierdzeń")
 
         y = database.get_potwierdzenia_by_id(confirm_edit_number)[0]
         self.confirmNumber = y['Nr_potwierdzenia']
@@ -565,9 +574,6 @@ class Searcher(QDialog):
     def __init__(self, parent=None):
         super(Searcher, self).__init__(parent)
 
-        # works that way, clunky but left it in, i have no other solution i could think of
-        # self.editor = Editor(0)
-
         self.setWindowTitle("Wyszukiwanie potwierdzeń")
         self.setMinimumSize(1500, 900)
 
@@ -735,6 +741,7 @@ class Adder(FillForm):
 
     def __init__(self, parent=None):
         super(Adder, self).__init__(parent)
+        self.setWindowTitle("Dodawanie potwierdzeń")
         for i in employees:
             self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
         self.labelRepair.hide()
@@ -745,7 +752,7 @@ if __name__ == '__main__':
     # Create the Qt Application
     app = QApplication(sys.argv)
     form = Form()
-    qtmodern.styles.dark(app)
+    qtmodern.styles.light(app)
     form.show()
     # Run the main Qt loop
     sys.exit(app.exec_())
