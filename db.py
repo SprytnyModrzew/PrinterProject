@@ -3,7 +3,7 @@ import sqlite3
 
 class DataBase:
     def __init__(self):
-        self.conn = sqlite3.connect('potwierdzenia7.db')
+        self.conn = sqlite3.connect('potwierdzenia10.db')
         self.cursor = self.conn.cursor()
 
     def __del__(self):
@@ -159,7 +159,7 @@ class DataBase:
                 "Id_pracownika": x[0],
                 "Imie": x[1],
                 "Nazwisko": x[2],
-                "Aktywny:": x[3],
+                "Aktywny": x[3],
             }
             listx.append(dict)
         return listx

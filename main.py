@@ -1,9 +1,11 @@
 import os
 import sys
+
+from PyQt5.QtGui import QWindow
 from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
                              QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QMainWindow, QPlainTextEdit,
                              QHBoxLayout, QGridLayout, QComboBox, QErrorMessage, QMessageBox, QCheckBox, QTableWidget,
-                             QTableWidgetItem)
+                             QTableWidgetItem, QWidget)
 import qtmodern.styles
 import qtmodern.windows
 import valid
@@ -16,7 +18,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-if not os.path.exists("potwierdzenia7.db"):
+if not os.path.exists("potwierdzenia10.db"):
     print('exists now')
     database = db.DataBase()
     database.sql_create_tables()
@@ -26,7 +28,116 @@ else:
 employees = database.get_all_pracownicy()
 
 
-class FillForm(QDialog):
+def updateEmps():
+    employeesTemp = database.get_all_pracownicy()
+    print(employeesTemp)
+    employees.clear()
+    for i in range(0, len(employeesTemp)):
+        employees.append(employeesTemp[i])
+    print(employees)
+
+
+class EmpFillForm(QWidget):
+    def action(self):
+        return
+
+    def __init__(self, parent=None):
+        super(EmpFillForm, self).__init__(parent)
+        self.labelName = QLabel("Imię")
+        self.lineName = QLineEdit()
+        self.labelSurname = QLabel("Nazwisko")
+        self.lineSurname = QLineEdit()
+
+        self.labelEmpNumber = QLabel("Pracownik")
+        self.lineEmpNumber = QComboBox()
+
+        self.button = QPushButton()
+
+        self.mainLayout = QVBoxLayout()
+
+        self.formLayout = QFormLayout()
+
+        self.button.clicked.connect(self.action)
+
+
+class EmpAdder(EmpFillForm):
+    def action(self):
+        try:
+            valid.name_valid(self.lineName.text())
+            valid.surname_valid(self.lineSurname.text())
+        except ValueError as error:
+            error_dialog = QMessageBox()
+            print(error.args)
+            error_dialog.setWindowTitle("Error")
+            error_dialog.setText(error.args[0])
+            error_dialog.exec()
+            return
+        super(EmpAdder, self).action()
+        print("woop")
+        database.insert_pracownik(self.lineName.text(), self.lineSurname.text(), 'T')
+        print("woop")
+        updateEmps()
+        self.destroy()
+
+    def __init__(self, parent=None):
+        super(EmpAdder, self).__init__(parent)
+        self.button.setText("Dodaj pracownika")
+        self.formLayout.addRow(self.labelName, self.lineName)
+        self.formLayout.addRow(self.labelSurname, self.lineSurname)
+
+        self.mainLayout.addLayout(self.formLayout)
+        self.mainLayout.addWidget(self.button)
+        self.setLayout(self.mainLayout)
+
+
+class EmpEditor(EmpFillForm):
+    def action(self):
+        try:
+            valid.name_valid(self.lineName.text())
+            valid.surname_valid(self.lineSurname.text())
+        except ValueError as error:
+            error_dialog = QMessageBox()
+            print(error.args)
+            error_dialog.setWindowTitle("Error")
+            error_dialog.setText(error.args[0])
+            error_dialog.exec()
+            return
+        x = 'N'
+        if self.checkActive.isChecked():
+            x = 'T'
+        database.update_pracownicy(id_prac=employees[self.lineEmpNumber.currentIndex()]["Id_pracownika"],
+                                   imie=self.lineName.text(),
+                                   nazwisko=self.lineSurname.text(),
+                                   aktywny=x)
+        updateEmps()
+        self.lineEmpNumber.clear()
+        for i in employees:
+            self.lineEmpNumber.addItem(i["Imie"] + " " + i["Nazwisko"])
+        self.destroy()
+        return
+
+    def __init__(self, parent=None):
+        super(EmpEditor, self).__init__(parent)
+        self.formLayout.addRow(self.labelEmpNumber, self.lineEmpNumber)
+        self.formLayout.addRow(self.labelName, self.lineName)
+        self.formLayout.addRow(self.labelSurname, self.lineSurname)
+
+        self.labelName.setText("Nowe imię")
+        self.labelSurname.setText("Nowe nazwisko")
+        self.mainLayout.addLayout(self.formLayout)
+        self.checkActive = QCheckBox("Pracujący?")
+
+        self.mainLayout.addWidget(self.checkActive)
+        self.mainLayout.addWidget(self.button)
+        self.setLayout(self.mainLayout)
+
+        self.button.setText("Edytuj pracownika")
+
+        for i in employees:
+            self.lineEmpNumber.addItem(i["Imie"] + " " + i["Nazwisko"])
+
+
+class FillForm(QWidget):
     def add(self):
         return
 
@@ -61,7 +172,7 @@ class FillForm(QDialog):
         super(FillForm, self).__init__(parent)
 
         self.mainLayout = QVBoxLayout()
-        self.setFixedSize(600, 1000)
+        # self.setFixedSize(600, 1000)
         self.formLayoutBox = QGroupBox()
 
         self.formLayout2 = QFormLayout()
@@ -214,31 +325,79 @@ class FillForm(QDialog):
         self.typeList.addItem("Telefon")
 
 
+class Login(QDialog):
+    def __init__(self, parent=None):
+        super(Login, self).__init__(parent)
+        self.textName = QLineEdit(self)
+        self.textPass = QLineEdit(self)
+        self.buttonLogin = QPushButton('Login', self)
+        self.buttonLogin.clicked.connect(self.handleLogin)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.textName)
+        layout.addWidget(self.textPass)
+        layout.addWidget(self.buttonLogin)
+
+    def handleLogin(self):
+        if (self.textName.text() == 'admin' and
+                self.textPass.text() == 'admin'):
+            self.accept()
+        else:
+            QMessageBox.warning(
+                self, 'Error', 'Bad user or password')
+
+
 class Form(QDialog):
     def search_window(self):
+        self.searcher = Searcher()
         self.searcher.show()
 
     def add_window(self):
+        self.adder = Adder()
         self.adder.show()
+
+    def emp_add_window(self):
+        self.empAdder = EmpAdder()
+        self.empAdder.show()
+
+    def emp_edit_window(self):
+        self.empEditor = EmpEditor()
+        self.empEditor.show()
+
+    def login(self):
+        self.login = Login()
+        self.login.setWindowTitle("Logowanie")
+        if self.login.exec() == QDialog.Accepted:
+            self.button4.show()
+            self.button5.show()
+            self.button3.hide()
 
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
         self.setWindowTitle("Menu")
         self.setMinimumWidth(200)
-        self.adder = Adder()
-        self.searcher = Searcher()
         self.button = QPushButton("Dodaj potwierdzenie")
         self.button2 = QPushButton("Szukaj potwierdzeń")
+        self.button3 = QPushButton("Dodatkowe przywileje")
+        self.button4 = QPushButton("Dodaj pracownika")
+        self.button5 = QPushButton("Edytuj pracownika")
         # Create layout and add widgets
         layout = QVBoxLayout()
         layout.addWidget(self.button)
         layout.addWidget(self.button2)
+        layout.addWidget(self.button3)
+        layout.addWidget(self.button4)
+        layout.addWidget(self.button5)
         # Set dialog layout
         self.setLayout(layout)
         # Add button signal to greetings slot
+        self.button4.hide()
+        self.button5.hide()
 
         self.button.clicked.connect(self.add_window)
         self.button2.clicked.connect(self.search_window)
+        self.button3.clicked.connect(self.login)
+        self.button4.clicked.connect(self.emp_add_window)
+        self.button5.clicked.connect(self.emp_edit_window)
 
 
 class Editor(FillForm):
@@ -537,7 +696,7 @@ class Searcher(QDialog):
             "Case_obudowa": "Obudowa",
             "Karta_pamieci": "Karta pamięci",
             "Karta_sim": "Karta SIM",
-            "Ladowarka":"Ładowarka"
+            "Ladowarka": "Ładowarka"
         }
         print(y)
         self.table.setRowCount(len(y))
@@ -747,6 +906,7 @@ class Adder(FillForm):
     def __init__(self, parent=None):
         super(Adder, self).__init__(parent)
         self.setWindowTitle("Dodawanie potwierdzeń")
+        print(employees)
         for i in employees:
             if i["Aktywny"] == 'T':
                 self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
