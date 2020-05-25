@@ -3,7 +3,7 @@ import sqlite3
 
 class DataBase:
     def __init__(self):
-        self.conn = sqlite3.connect('potwierdzenia2.db')
+        self.conn = sqlite3.connect('potwierdzenia7.db')
         self.cursor = self.conn.cursor()
 
     def __del__(self):
@@ -14,7 +14,8 @@ class DataBase:
         sql_create_table_pracownicy = "CREATE TABLE Pracownicy (" \
                                       "Id_pracownika INTEGER PRIMARY KEY AUTOINCREMENT," \
                                       "Imie VARCHAR(20) NOT NULL," \
-                                      "Nazwisko VARCHAR(20) NOT NULL);"
+                                      "Nazwisko VARCHAR(20) NOT NULL," \
+                                      "Aktywny VARCHAR(1) NOT NULL);"
         self.cursor.execute(sql_create_table_pracownicy)
 
         sql_create_table_potwierdzenia = "CREATE TABLE Potwierdzenia (" \
@@ -94,8 +95,8 @@ class DataBase:
         self.cursor.execute(sql_create_table_telefon)
         self.conn.commit()
 
-    def insert_pracownik(self, imie, nazwisko):
-        sql_insert_pracownik = "INSERT INTO Pracownicy (Imie, Nazwisko) VALUES ('{}', '{}');".format(imie, nazwisko)
+    def insert_pracownik(self, imie, nazwisko, aktywny):
+        sql_insert_pracownik = "INSERT INTO Pracownicy (Imie, Nazwisko, Aktywny) VALUES ('{}', '{}', '{}');".format(imie, nazwisko, aktywny)
         self.cursor.execute(sql_insert_pracownik)
         self.conn.commit()
 
@@ -157,7 +158,8 @@ class DataBase:
             dict = {
                 "Id_pracownika": x[0],
                 "Imie": x[1],
-                "Nazwisko": x[2]
+                "Nazwisko": x[2],
+                "Aktywny:": x[3],
             }
             listx.append(dict)
         return listx
@@ -185,11 +187,12 @@ class DataBase:
                             "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
+                            "Aktywny:": z[14],
                             "Dodatkowe":
-                                {"Zasilacz": z[17],
-                                "Kabel_zasilajacy": z[18],
-                                "Mysz_usb": z[19],
-                                "Opakowanie": z[20]}
+                                {"Zasilacz": z[18],
+                                "Kabel_zasilajacy": z[19],
+                                "Mysz_usb": z[20],
+                                "Opakowanie": z[21]}
                             }
                 listx.append(dict)
             elif(x[0] == "telefon"):
@@ -211,13 +214,14 @@ class DataBase:
                             "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
+                            "Aktywny:": z[14],
                             "Dodatkowe":
-                                {"Kabel_zasilajacy": z[17],
-                                "Ladowarka": z[18],
-                                "Case_obudowa": z[19],
-                                "Karta_sim": z[20],
-                                "Karta_pamieci": z[21],
-                                "Opakowanie": z[22]}
+                                {"Kabel_zasilajacy": z[18],
+                                "Ladowarka": z[19],
+                                "Case_obudowa": z[20],
+                                "Karta_sim": z[21],
+                                "Karta_pamieci": z[22],
+                                "Opakowanie": z[23]}
                             }
                     listx.append(dict)
             elif(x[0] == "drukarka_atramentowa"):
@@ -239,13 +243,14 @@ class DataBase:
                             "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
+                            "Aktywny:": z[14],
                             "Dodatkowe":
-                                {"Kabel_zasilajacy": z[17],
-                                "Kabel_sygnalowy": z[18],
-                                "Zasilacz": z[19],
-                                "Tusz_czarny": z[20],
-                                "Tusz_kolorowy": z[21],
-                                "Opakowanie": z[22]}
+                                {"Kabel_zasilajacy": z[18],
+                                "Kabel_sygnalowy": z[19],
+                                "Zasilacz": z[20],
+                                "Tusz_czarny": z[21],
+                                "Tusz_kolorowy": z[22],
+                                "Opakowanie": z[23]}
                             }
                     listx.append(dict)
             elif(x[0] == "drukarka_laserowa"):
@@ -267,12 +272,13 @@ class DataBase:
                             "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
+                            "Aktywny:": z[14],
                             "Dodatkowe":
-                                {"Kabel_zasilajacy": z[17],
-                                "Kabel_sygnalowy": z[18],
-                                "Toner_czarny": z[19],
-                                "Toner_kolorowy": z[20],
-                                "Opakowanie": z[21]}
+                                {"Kabel_zasilajacy": z[18],
+                                "Kabel_sygnalowy": z[19],
+                                "Toner_czarny": z[20],
+                                "Toner_kolorowy": z[21],
+                                "Opakowanie": z[22]}
                             }
                     listx.append(dict)
             elif(x[0] == "drukarka_iglowa"):
@@ -294,12 +300,13 @@ class DataBase:
                             "Id_pracownika": z[10],
                             "Imie": z[12],
                             "Nazwisko": z[13],
+                            "Aktywny:": z[14],
                             "Dodatkowe":
-                                {"Kabel_zasilajacy": z[17],
-                                "Kabel_sygnalowy": z[18],
-                                "Zasilacz": z[19],
-                                "Tasma_barwiaca": z[20],
-                                "Opakowanie": z[21]}
+                                {"Kabel_zasilajacy": z[18],
+                                "Kabel_sygnalowy": z[19],
+                                "Zasilacz": z[20],
+                                "Tasma_barwiaca": z[21],
+                                "Opakowanie": z[22]}
                             }
                     listx.append(dict)
         return listx
@@ -407,14 +414,13 @@ class DataBase:
         self.cursor.execute(sql_update_telefon)
         self.conn.commit()
 
-    def update_pracownicy(self, id_prac, imie, nazwisko):
+    def update_pracownicy(self, id_prac, imie, nazwisko, aktywny):
         sql_update_pracownik = "UPDATE Pracownicy SET " \
                                "Imie = '{}'," \
-                               "Nazwisko = '{}' " \
-                               "WHERE Id_pracownika = {};".format(imie, nazwisko, id_prac)
+                               "Nazwisko = '{}', " \
+                               "Aktywny = '{}' " \
+                               "WHERE Id_pracownika = {};".format(imie, nazwisko, aktywny, id_prac)
         print(sql_update_pracownik)
         self.cursor.execute(sql_update_pracownik)
         self.conn.commit()
-
-
 

@@ -10,8 +10,13 @@ import valid
 import db
 from datetime import date
 
-database = db.DataBase()
-if not os.path.exists("potwierdzenia2.db"):
+
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(file)))
+    return os.path.join(base_path, relative_path)
+
+
+if not os.path.exists("potwierdzenia7.db"):
     print('exists now')
     database = db.DataBase()
     database.sql_create_tables()
@@ -743,7 +748,8 @@ class Adder(FillForm):
         super(Adder, self).__init__(parent)
         self.setWindowTitle("Dodawanie potwierdzeń")
         for i in employees:
-            self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
+            if i["Aktywny"] == 'T':
+                self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
         self.labelRepair.hide()
         self.repairSome.hide()
 
