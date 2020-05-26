@@ -6,8 +6,8 @@ tex = open("C:\\Users\\Modrzew\\PycharmProjects\\qt\\template.tex","r")
 text = tex.read()
 tex.close()
 
-text.replace("VAR-EMPNAME", "Kuba Jebapisowski")
-text.replace("VAR-SERIALNUMBER", str(2020203))
+text = text.replace("VAR-EMPNAME", "Kuba Jebapisowski")
+text = text.replace("VAR-SERIALNUMBER", str(2020203))
 print(text)
 
 file = open("temp.tex","w")
