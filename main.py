@@ -81,6 +81,7 @@ class EmpAdder(EmpFillForm):
 
     def __init__(self, parent=None):
         super(EmpAdder, self).__init__(parent)
+        self.setWindowTitle("Dodawanie pracownika")
         self.button.setText("Dodaj pracownika")
         self.formLayout.addRow(self.labelName, self.lineName)
         self.formLayout.addRow(self.labelSurname, self.lineSurname)
@@ -91,6 +92,20 @@ class EmpAdder(EmpFillForm):
 
 
 class EmpEditor(EmpFillForm):
+    def setEmp(self):
+        self.lineName.setText(employees[self.lineEmpNumber.currentIndex()]["Imie"])
+        self.lineSurname.setText(employees[self.lineEmpNumber.currentIndex()]["Nazwisko"])
+        if employees[self.lineEmpNumber.currentIndex()]["Aktywny"] == 'T':
+            self.checkActive.setChecked(True)
+        else:
+            self.checkActive.setChecked(False)
+    def deleteEmp(self):
+        database.update_pracownicy(id_prac=employees[self.lineEmpNumber.currentIndex()]["Id_pracownika"],
+                                   imie=employees[self.lineEmpNumber.currentIndex()]["Imie"],
+                                   nazwisko=employees[self.lineEmpNumber.currentIndex()]["Nazwisko"],
+                                   aktywny='N')
+        updateEmps()
+        self.destroy()
     def action(self):
         try:
             valid.name_valid(self.lineName.text())
@@ -118,9 +133,12 @@ class EmpEditor(EmpFillForm):
 
     def __init__(self, parent=None):
         super(EmpEditor, self).__init__(parent)
+        self.setWindowTitle("Edycja pracowników")
         self.formLayout.addRow(self.labelEmpNumber, self.lineEmpNumber)
         self.formLayout.addRow(self.labelName, self.lineName)
         self.formLayout.addRow(self.labelSurname, self.lineSurname)
+
+        self.buttonDelete = QPushButton("Usuń pracownika")
 
         self.labelName.setText("Nowe imię")
         self.labelSurname.setText("Nowe nazwisko")
@@ -129,9 +147,13 @@ class EmpEditor(EmpFillForm):
 
         self.mainLayout.addWidget(self.checkActive)
         self.mainLayout.addWidget(self.button)
+        self.mainLayout.addWidget(self.buttonDelete)
         self.setLayout(self.mainLayout)
 
         self.button.setText("Edytuj pracownika")
+
+        self.buttonDelete.clicked.connect(self.deleteEmp)
+        self.lineEmpNumber.currentIndexChanged.connect(self.setEmp)
 
         for i in employees:
             self.lineEmpNumber.addItem(i["Imie"] + " " + i["Nazwisko"])
@@ -330,6 +352,8 @@ class Login(QDialog):
         super(Login, self).__init__(parent)
         self.textName = QLineEdit(self)
         self.textPass = QLineEdit(self)
+
+        self.textPass.setEchoMode(QLineEdit.Password)
         self.buttonLogin = QPushButton('Login', self)
         self.buttonLogin.clicked.connect(self.handleLogin)
         layout = QVBoxLayout(self)
@@ -377,9 +401,9 @@ class Form(QDialog):
         self.setMinimumWidth(200)
         self.button = QPushButton("Dodaj potwierdzenie")
         self.button2 = QPushButton("Szukaj potwierdzeń")
-        self.button3 = QPushButton("Dodatkowe przywileje")
+        self.button3 = QPushButton("Edycja pracowników")
         self.button4 = QPushButton("Dodaj pracownika")
-        self.button5 = QPushButton("Edytuj pracownika")
+        self.button5 = QPushButton("Edytuj/usuń pracownika")
         # Create layout and add widgets
         layout = QVBoxLayout()
         layout.addWidget(self.button)
@@ -641,7 +665,7 @@ class Editor(FillForm):
                 self.phoneButtons['case'].setChecked(False)
 
 
-class Searcher(QDialog):
+class Searcher(QWidget):
     def edit(self):
         self.editor = Editor(self.table.item(self.table.currentRow(), 0).text())
         self.editor.show()

@@ -40,7 +40,8 @@ def device_name_valid(devname):
                     if devname[i] not in polish_big_characters and devname[i] not in polish_small_characters:
                         if devname[i] != chr(32):
                             if devname[i] != chr(45):
-                                raise ValueError("Nazwa urządzenia powinna zawierać tylko cyfry, litery, spacje, polskie znaki lub '-'!")
+                                raise ValueError(
+                                    "Nazwa urządzenia powinna zawierać tylko cyfry, litery, spacje, polskie znaki lub '-'!")
     return
 
 
@@ -78,6 +79,7 @@ def description_valid(description):
     return
 
 
+# never used
 def confirmation_number_valid(conf_number, last_number):
     if conf_number < 1 or conf_number > last_number:
         raise ValueError("Nie ma takiego potwierdzenia!")

@@ -1,0 +1,111 @@
+\documentclass{article}
+\usepackage{import}
+%\import{/}{wpwwnotesstyle.tex}
+\usepackage{mathtools}
+\usepackage{polski}
+\usepackage{pgfplots}
+\usepackage{geometry}
+\usepackage{filecontents}
+\usepackage{tabularx}
+\usepackage[document]{ragged2e}
+%\definecolor{sectioncolor}{RGB}{149, 255, 0}
+\geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+\setlength{\tabcolsep}{0.6em} % for the horizontal padding
+{\renewcommand{\arraystretch}{1.5}% for the vertical padding
+\usepackage{arev}
+\usepackage[T1]{fontenc}
+\begin{document}
+\begin{tabularx}{\textwidth} { 
+   >{\raggedright\arraybackslash}X 
+   >{\centering\arraybackslash}X 
+   >{\raggedleft\arraybackslash}X  }
+
+61-234 Poznań, ul. Gówniana & \hspace{4mm} Wcale nie Tech Serwis \\
+pn.-pt. 9-17 & \hspace{4mm}  Filipa Baranowskiego\\
+tel. 22 4444444 &\\
+spierdalaj@gmail.com &\\
+\end{tabularx}
+
+
+\begin{center}
+\textbf{Potwierdzenie przyjęcia do naprawy nr A13550} \\
+302-3-0, wydanie 2, strona 1/1\\
+\end{center}
+
+1. Przyjęcie urządzenia\\
+\begin{tabularx}{\textwidth} { 
+  | >{\raggedright\arraybackslash}X 
+  | >{\centering\arraybackslash}X 
+  | >{\raggedleft\arraybackslash}X | }
+\hline 
+ Data i czas przyjęcia & VAR-TIME \\ 
+\hline
+ Nazwa i nr modelu urządzenia & VAR-DEVICENAME  \\  
+\hline
+ Nr seryjny urządzenia/głowicy & VAR-SERIALNUMBER   \\
+\hline
+Nazwa Klienta & VAR-CLIENTNAME \\
+\hline
+Telefon kontaktowy & VAR-NUMBER \\
+\hline
+\end{tabularx}\vspace{2mm}
+2. Opis urządzenia \\
+\vspace{2mm}
+\begin{tabularx}{\textwidth} { 
+  | >{\raggedright\arraybackslash}X 
+  | >{\centering\arraybackslash}X 
+  | >{\raggedleft\arraybackslash}X | }
+\hline 
+VAR-TABLE \\
+\hline
+\end{tabularx} \vspace{1mm} \\
+3. Opis uszkodzenia \\
+VAR-SHWANG
+
+\begin{tabularx}{\textwidth} { 
+   >{\raggedright\arraybackslash}X 
+   >{\raggedleft\arraybackslash}X 
+   >{\raggedleft\arraybackslash}X  }
+
+
+\end{tabularx}
+\begin{footnotesize}
+\begin{enumerate}
+\item W przypadku nieodebrania sprzętu w terminie 60 dni zgadzam się na utylizację sprzętu i poniosę jej koszty.\\
+\item Prosimy o kontakt telefoniczny lub osobisty w celu ustalenia terminu i kosztów naprawy.\\
+\item W przypadku braku zgody na naprawę koszt wyceny/opinii serwisowej wynosi 30,00 zł netto.
+\end{enumerate}
+\end{footnotesize} \vspace{3mm}
+
+\begin{tabularx}{\textwidth} { 
+   >{\raggedright\arraybackslash}X 
+   >{\raggedright\arraybackslash}X 
+   >{\raggedleft\arraybackslash}X  }
+
+
+{\small Podpis pracownika serwisu} & &{\small Podpis Klienta (czytelny)} \\
+\vspace{5mm}
+VAR-EMPNAME & &
+
+
+
+\end{tabularx}\\
+
+\vspace{2mm}
+\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
+Potwierdzam odbiór urządzenia \vspace{2mm}\\
+
+
+\begin{tabularx}{\textwidth} { 
+   >{\raggedright\arraybackslash}X 
+   >{\raggedright\arraybackslash}X 
+   >{\raggedleft\arraybackslash}X  }
+{\small Data odbioru} & & {\small Podpis Klienta (czytelny)}
+\end{tabularx}
+
+\end{document}
