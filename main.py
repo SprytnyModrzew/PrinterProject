@@ -12,16 +12,17 @@ import valid
 import db
 from datetime import date
 
-
-def resource_path(relative_path):
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(file)))
-    return os.path.join(base_path, relative_path)
-
+import des
+des.initial()
+des.create16keys()
+# des.encrypt("admin")
 
 if not os.path.exists("potwierdzenia10.db"):
+    # first use of program
     print('exists now')
     database = db.DataBase()
     database.sql_create_tables()
+    des.encrypt("admin")
 else:
     database = db.DataBase()
     print('existed')
@@ -350,27 +351,60 @@ class FillForm(QWidget):
 class Login(QDialog):
     def __init__(self, parent=None):
         super(Login, self).__init__(parent)
-        self.textName = QLineEdit(self)
+        self.textLabel = QLabel("Wpisz hasło dostępu")
         self.textPass = QLineEdit(self)
 
         self.textPass.setEchoMode(QLineEdit.Password)
         self.buttonLogin = QPushButton('Login', self)
         self.buttonLogin.clicked.connect(self.handleLogin)
         layout = QVBoxLayout(self)
-        layout.addWidget(self.textName)
+        layout.addWidget(self.textLabel)
         layout.addWidget(self.textPass)
         layout.addWidget(self.buttonLogin)
 
     def handleLogin(self):
-        if (self.textName.text() == 'admin' and
-                self.textPass.text() == 'admin'):
+        if self.textPass.text() == des.decrypt():
             self.accept()
         else:
             QMessageBox.warning(
-                self, 'Error', 'Bad user or password')
+                self, 'Error', 'Niepoprawne hasło')
 
+
+class ChangePass(QDialog):
+    def __init__(self, parent=None):
+        super(ChangePass, self).__init__(parent)
+        self.passLabel = QLabel("Stare hasło")
+        self.textPass = QLineEdit(self)
+        self.passLabelNew = QLabel("Nowe hasło")
+        self.textPassNew = QLineEdit(self)
+
+        self.textPass.setEchoMode(QLineEdit.Password)
+        self.textPassNew.setEchoMode(QLineEdit.Password)
+        self.buttonLogin = QPushButton('Zmień hasło', self)
+        self.buttonLogin.clicked.connect(self.handlePassChange)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.passLabel)
+        layout.addWidget(self.textPass)
+        layout.addWidget(self.passLabelNew)
+        layout.addWidget(self.textPassNew)
+        layout.addWidget(self.buttonLogin)
+
+    def handlePassChange(self):
+        if self.textPassNew.text() == "":
+            QMessageBox.warning(
+                self, 'Error', 'Nowe hasło nie może być puste')
+        elif self.textPass.text() == des.decrypt() and self.textPassNew.text() != "":
+            des.encrypt(self.textPassNew.text())
+            self.accept()
+        else:
+            QMessageBox.warning(
+                self, 'Error', 'Niepoprawne hasło')
 
 class Form(QDialog):
+    def change_pass(self):
+        self.changer = ChangePass()
+        self.changer.setWindowTitle("Zmiana hasła")
+        self.changer.show()
     def search_window(self):
         self.searcher = Searcher()
         self.searcher.show()
@@ -394,6 +428,7 @@ class Form(QDialog):
             self.button4.show()
             self.button5.show()
             self.button3.hide()
+            self.button6.show()
 
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
@@ -404,6 +439,7 @@ class Form(QDialog):
         self.button3 = QPushButton("Edycja pracowników")
         self.button4 = QPushButton("Dodaj pracownika")
         self.button5 = QPushButton("Edytuj/usuń pracownika")
+        self.button6 = QPushButton("Zmień hasło dostępu")
         # Create layout and add widgets
         layout = QVBoxLayout()
         layout.addWidget(self.button)
@@ -411,17 +447,20 @@ class Form(QDialog):
         layout.addWidget(self.button3)
         layout.addWidget(self.button4)
         layout.addWidget(self.button5)
+        layout.addWidget(self.button6)
         # Set dialog layout
         self.setLayout(layout)
         # Add button signal to greetings slot
         self.button4.hide()
         self.button5.hide()
+        self.button6.hide()
 
         self.button.clicked.connect(self.add_window)
         self.button2.clicked.connect(self.search_window)
         self.button3.clicked.connect(self.login)
         self.button4.clicked.connect(self.emp_add_window)
         self.button5.clicked.connect(self.emp_edit_window)
+        self.button6.clicked.connect(self.change_pass)
 
 
 class Editor(FillForm):
