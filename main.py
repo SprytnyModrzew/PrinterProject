@@ -10,9 +10,11 @@ import qtmodern.styles
 import qtmodern.windows
 import valid
 import db
-from datetime import date
+from datetime import date,datetime
+import latex_converter
 
 import des
+
 des.initial()
 des.create16keys()
 # des.encrypt("admin")
@@ -100,6 +102,7 @@ class EmpEditor(EmpFillForm):
             self.checkActive.setChecked(True)
         else:
             self.checkActive.setChecked(False)
+
     def deleteEmp(self):
         database.update_pracownicy(id_prac=employees[self.lineEmpNumber.currentIndex()]["Id_pracownika"],
                                    imie=employees[self.lineEmpNumber.currentIndex()]["Imie"],
@@ -107,6 +110,7 @@ class EmpEditor(EmpFillForm):
                                    aktywny='N')
         updateEmps()
         self.destroy()
+
     def action(self):
         try:
             valid.name_valid(self.lineName.text())
@@ -400,11 +404,13 @@ class ChangePass(QDialog):
             QMessageBox.warning(
                 self, 'Error', 'Niepoprawne hasło')
 
+
 class Form(QDialog):
     def change_pass(self):
         self.changer = ChangePass()
         self.changer.setWindowTitle("Zmiana hasła")
         self.changer.show()
+
     def search_window(self):
         self.searcher = Searcher()
         self.searcher.show()
@@ -870,7 +876,6 @@ class Searcher(QWidget):
 class Adder(FillForm):
     def add(self):
         types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
-
         print(types[self.typeList.currentIndex()])
         print(self.lineClientNumber.text())
         print(employees[self.empList.currentIndex()]["Id_pracownika"])
@@ -884,11 +889,12 @@ class Adder(FillForm):
                                       informacje_dodatkowe=self.addSome.toPlainText(),
                                       opis_naprawy="",
                                       id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
-        print(database.get_all_pracownicy())
+        print("poszlo")
 
+        print(database.get_all_pracownicy())
+        check_list = {}
         # drukarka atramentowa
         if self.typeList.currentIndex() == 0:
-            check_list = {}
             for key in self.inkButtons:
                 if self.inkButtons[key].isChecked():
                     check_list[key] = "T"
@@ -905,7 +911,6 @@ class Adder(FillForm):
                                                  )
         # drukarka laserowa
         if self.typeList.currentIndex() == 1:
-            check_list = {}
             for key in self.laserButtons:
                 if self.laserButtons[key].isChecked():
                     check_list[key] = "T"
@@ -920,7 +925,6 @@ class Adder(FillForm):
                                               opakowanie=check_list["packing"])
         # drukarka igłowa
         if self.typeList.currentIndex() == 2:
-            check_list = {}
             for key in self.pointButtons:
                 if self.pointButtons[key].isChecked():
                     check_list[key] = "T"
@@ -935,7 +939,6 @@ class Adder(FillForm):
                                             opakowanie=check_list["packing"])
         # laptop
         if self.typeList.currentIndex() == 3:
-            check_list = {}
             for key in self.laptopButtons:
                 if self.laptopButtons[key].isChecked():
                     check_list[key] = "T"
@@ -949,7 +952,6 @@ class Adder(FillForm):
                                    opakowanie=check_list["packing"])
         # telefon
         if self.typeList.currentIndex() == 4:
-            check_list = {}
             for key in self.phoneButtons:
                 if self.phoneButtons[key].isChecked():
                     check_list[key] = "T"
@@ -964,6 +966,19 @@ class Adder(FillForm):
                                     case_ob=check_list["case"],
                                     ladowarka=check_list["charger"])
             print(check_list)
+
+        latex_converter.to_pdf(
+            empname=employees[self.empList.currentIndex()]["Imie"] + " " + employees[self.empList.currentIndex()][
+                "Nazwisko"],
+            devicename=self.lineModel.text(),
+            serialnumber=self.lineNumber.text(),
+            clientname=self.lineClient.text(),
+            number=self.lineClientNumber.text(),
+            shwang=self.description.toPlainText(),
+            confirm=database.get_last_nr_potwierdzenia(),
+            data=datetime.now().strftime("%d/%m/%y %H:%M:%S"),
+            dicts=check_list
+        )
         self.destroy()
 
     def __init__(self, parent=None):
