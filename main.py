@@ -19,7 +19,7 @@ des.initial()
 des.create16keys()
 # des.encrypt("admin")
 
-if not os.path.exists("potwierdzenia10.db"):
+if not os.path.exists("potwierdzenia.db"):
     # first use of program
     print('exists now')
     database = db.DataBase()
@@ -442,7 +442,7 @@ class Form(QDialog):
         self.setMinimumWidth(200)
         self.button = QPushButton("Dodaj potwierdzenie")
         self.button2 = QPushButton("Szukaj potwierdzeń")
-        self.button3 = QPushButton("Edycja pracowników")
+        self.button3 = QPushButton("Specjalne przywileje")
         self.button4 = QPushButton("Dodaj pracownika")
         self.button5 = QPushButton("Edytuj/usuń pracownika")
         self.button6 = QPushButton("Zmień hasło dostępu")
@@ -485,9 +485,9 @@ class Editor(FillForm):
             imie=self.empName,
             nazwisko=self.empSurname)
 
+        check_list = {}
         # drukarka atramentowa
         if self.typeList.currentIndex() == 0:
-            check_list = {}
             for key in self.inkButtons:
                 if self.inkButtons[key].isChecked():
                     check_list[key] = "T"
@@ -505,7 +505,6 @@ class Editor(FillForm):
             )
         # drukarka laserowa
         if self.typeList.currentIndex() == 1:
-            check_list = {}
             for key in self.laserButtons:
                 if self.laserButtons[key].isChecked():
                     check_list[key] = "T"
@@ -520,7 +519,6 @@ class Editor(FillForm):
                                               opakowanie=check_list["packing"])
         # drukarka igłowa
         if self.typeList.currentIndex() == 2:
-            check_list = {}
             for key in self.pointButtons:
                 if self.pointButtons[key].isChecked():
                     check_list[key] = "T"
@@ -535,7 +533,6 @@ class Editor(FillForm):
                                             opakowanie=check_list["packing"])
         # laptop
         if self.typeList.currentIndex() == 3:
-            check_list = {}
             for key in self.laptopButtons:
                 if self.laptopButtons[key].isChecked():
                     check_list[key] = "T"
@@ -549,7 +546,6 @@ class Editor(FillForm):
                                    opakowanie=check_list["packing"])
         # telefon
         if self.typeList.currentIndex() == 4:
-            check_list = {}
             for key in self.phoneButtons:
                 if self.phoneButtons[key].isChecked():
                     check_list[key] = "T"
@@ -563,6 +559,18 @@ class Editor(FillForm):
                                     opakowanie=check_list["packing"],
                                     case_ob=check_list["case"],
                                     ladowarka=check_list["charger"])
+        latex_converter.to_pdf(
+            empname=employees[self.empList.currentIndex()]["Imie"] + " " + employees[self.empList.currentIndex()][
+                "Nazwisko"],
+            devicename=self.lineModel.text(),
+            serialnumber=self.lineNumber.text(),
+            clientname=self.lineClient.text(),
+            number=self.lineClientNumber.text(),
+            shwang=self.description.toPlainText(),
+            confirm=self.confirmNumber,
+            data=self.date,
+            dicts=check_list
+        )
         self.destroy()
 
     def __init__(self, confirm_edit_number, parent=None):
@@ -572,6 +580,7 @@ class Editor(FillForm):
 
         y = database.get_potwierdzenia_by_id(confirm_edit_number)[0]
         self.confirmNumber = y['Nr_potwierdzenia']
+        self.date = y["Data"]
         self.empName = y["Imie"]
         self.empSurname = y["Nazwisko"]
 

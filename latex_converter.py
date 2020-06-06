@@ -3,7 +3,7 @@ import os
 
 def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confirm, data, dicts):
     print("woop")
-    tex = open("C:\\Users\\Modrzew\\PycharmProjects\\qt\\template.tex", "r")
+    tex = open("template.tex", "r")
     text = tex.read()
     tex.close()
     print(dicts)
@@ -36,7 +36,7 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
     for key in dicts:
         temp = pretty_strings[key]
         print(temp)
-        text_table = text_table + str(temp) + " & " + pretty_boxes[dicts[key]]
+        text_table = text_table + temp + " & " + pretty_boxes[dicts[key]]
         i = i + 1
         if i % 2:
             text_table = text_table + " & "
@@ -47,7 +47,7 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
     text_table = text_table + " \\end{tabular} "
     print(text_table)
 
-    # text = text.replace("VAR-CONFIRM", str(confirm))
+    text = text.replace("VAR-CONFIRM", str(confirm))
     text = text.replace("VAR-TABLE", text_table)
 
     text = text.replace("VAR-EMPNAME", empname)
@@ -58,8 +58,9 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
 
     text = text.replace("VAR-SERIALNUMBER", serialnumber)
     text = text.replace("VAR-SHWANG", shwang)
+    print(text)
     print("woop1")
-    file = open("C:\\Users\\Modrzew\\PycharmProjects\\qt\\temp.tex", "w")
+    file = open("temp.tex", "w")
     print("woop2")
     file.write(text)
     print("woop3")

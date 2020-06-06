@@ -3,7 +3,7 @@ import sqlite3
 
 class DataBase:
     def __init__(self):
-        self.conn = sqlite3.connect('potwierdzenia10.db')
+        self.conn = sqlite3.connect('potwierdzenia.db')
         self.cursor = self.conn.cursor()
 
     def __del__(self):
