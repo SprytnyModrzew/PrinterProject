@@ -21,23 +21,23 @@ des.create16keys()
 
 if not os.path.exists("potwierdzenia.db"):
     # first use of program
-    print('exists now')
+    # print('exists now')
     database = db.DataBase()
     database.sql_create_tables()
     des.encrypt("admin")
 else:
     database = db.DataBase()
-    print('existed')
+    # print('existed')
 employees = database.get_all_pracownicy()
 
 
 def updateEmps():
     employeesTemp = database.get_all_pracownicy()
-    print(employeesTemp)
+    # print(employeesTemp)
     employees.clear()
     for i in range(0, len(employeesTemp)):
         employees.append(employeesTemp[i])
-    print(employees)
+    # print(employees)
 
 
 class EmpFillForm(QWidget):
@@ -70,15 +70,15 @@ class EmpAdder(EmpFillForm):
             valid.surname_valid(self.lineSurname.text())
         except ValueError as error:
             error_dialog = QMessageBox()
-            print(error.args)
+            # print(error.args)
             error_dialog.setWindowTitle("Error")
             error_dialog.setText(error.args[0])
             error_dialog.exec()
             return
         super(EmpAdder, self).action()
-        print("woop")
+        # print("woop")
         database.insert_pracownik(self.lineName.text(), self.lineSurname.text(), 'T')
-        print("woop")
+        #print("woop")
         updateEmps()
         self.destroy()
 
@@ -102,7 +102,7 @@ class EmpEditor(EmpFillForm):
             self.checkActive.setChecked(True)
         else:
             self.checkActive.setChecked(False)
-
+    '''
     def deleteEmp(self):
         database.update_pracownicy(id_prac=employees[self.lineEmpNumber.currentIndex()]["Id_pracownika"],
                                    imie=employees[self.lineEmpNumber.currentIndex()]["Imie"],
@@ -110,14 +110,14 @@ class EmpEditor(EmpFillForm):
                                    aktywny='N')
         updateEmps()
         self.destroy()
-
+    '''
     def action(self):
         try:
             valid.name_valid(self.lineName.text())
             valid.surname_valid(self.lineSurname.text())
         except ValueError as error:
             error_dialog = QMessageBox()
-            print(error.args)
+            #print(error.args)
             error_dialog.setWindowTitle("Error")
             error_dialog.setText(error.args[0])
             error_dialog.exec()
@@ -143,21 +143,21 @@ class EmpEditor(EmpFillForm):
         self.formLayout.addRow(self.labelName, self.lineName)
         self.formLayout.addRow(self.labelSurname, self.lineSurname)
 
-        self.buttonDelete = QPushButton("Usuń pracownika")
+        # self.buttonDelete = QPushButton("Usuń pracownika")
 
         self.labelName.setText("Nowe imię")
         self.labelSurname.setText("Nowe nazwisko")
         self.mainLayout.addLayout(self.formLayout)
-        self.checkActive = QCheckBox("Pracujący?")
+        self.checkActive = QCheckBox("Zatrudniony?")
 
         self.mainLayout.addWidget(self.checkActive)
         self.mainLayout.addWidget(self.button)
-        self.mainLayout.addWidget(self.buttonDelete)
+        # self.mainLayout.addWidget(self.buttonDelete)
         self.setLayout(self.mainLayout)
 
         self.button.setText("Edytuj pracownika")
 
-        self.buttonDelete.clicked.connect(self.deleteEmp)
+        # self.buttonDelete.clicked.connect(self.deleteEmp)
         self.lineEmpNumber.currentIndexChanged.connect(self.setEmp)
 
         for i in employees:
@@ -177,7 +177,7 @@ class FillForm(QWidget):
             valid.description_valid(self.description.toPlainText())
         except ValueError as error:
             error_dialog = QMessageBox()
-            print(error.args)
+            #print(error.args)
             error_dialog.setWindowTitle("Error")
             error_dialog.setText(error.args[0])
             error_dialog.exec()
@@ -191,7 +191,7 @@ class FillForm(QWidget):
         for i in range(0, len(types)):
             types[i].hide()
 
-        print(self.typeList.currentIndex())
+        #print(self.typeList.currentIndex())
         types[self.typeList.currentIndex()].show()
         return
 
@@ -493,7 +493,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.update_drukarka_atramentowa(
                 nr_potw=self.confirmNumber,
                 kabel_sygn=check_list["signal"],
@@ -510,7 +510,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.update_drukarka_laserowa(nr_potw=self.confirmNumber,
                                               kabel_sygn=check_list["signal"],
                                               kabel_zas=check_list["power"],
@@ -524,7 +524,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.update_drukarka_iglowa(nr_potw=self.confirmNumber,
                                             kabel_sygn=check_list["signal"],
                                             kabel_zas=check_list["power"],
@@ -538,7 +538,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.update_laptop(nr_potw=self.confirmNumber,
                                    kabel_zas=check_list["power"],
                                    mysz=check_list["mouse"],
@@ -551,7 +551,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.update_telefon(nr_potw=self.confirmNumber,
                                     kabel_zas=check_list["power"],
                                     karta_pamieci=check_list["mem_card"],
@@ -588,6 +588,7 @@ class Editor(FillForm):
         self.typeList.hide()
         self.empList.hide()
         self.labelAcc.hide()
+        self.buttonFinish.setText("Zatwierdź zmiany")
 
         # filling out the gaps
         self.addSome.setPlainText(y["Informacje_dodatkowe"])
@@ -745,7 +746,7 @@ class Searcher(QWidget):
     def search_by_serial_number(self):
         x = self.inputSerial.text()
         y = database.get_potwierdzenia_by_sn(x)
-        print(y)
+        #(y)
         self.display(y)
 
     def search_by_client_name(self):
@@ -776,7 +777,7 @@ class Searcher(QWidget):
             "Karta_sim": "Karta SIM",
             "Ladowarka": "Ładowarka"
         }
-        print(y)
+        #print(y)
         self.table.setRowCount(len(y))
         self.table.setColumnCount(11)
         self.table.setHorizontalHeaderItem(0, QTableWidgetItem("Nr potwierdzenia"))
@@ -885,9 +886,9 @@ class Searcher(QWidget):
 class Adder(FillForm):
     def add(self):
         types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
-        print(types[self.typeList.currentIndex()])
-        print(self.lineClientNumber.text())
-        print(employees[self.empList.currentIndex()]["Id_pracownika"])
+        #print(types[self.typeList.currentIndex()])
+        #print(self.lineClientNumber.text())
+        #print(employees[self.empList.currentIndex()]["Id_pracownika"])
         database.insert_potwierdzenie(data=date.today(),
                                       typ=types[self.typeList.currentIndex()],
                                       nazwa_urzadzenia=self.lineModel.text(),
@@ -898,9 +899,9 @@ class Adder(FillForm):
                                       informacje_dodatkowe=self.addSome.toPlainText(),
                                       opis_naprawy="",
                                       id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
-        print("poszlo")
+        #print("poszlo")
 
-        print(database.get_all_pracownicy())
+        #print(database.get_all_pracownicy())
         check_list = {}
         # drukarka atramentowa
         if self.typeList.currentIndex() == 0:
@@ -909,7 +910,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.insert_drukarka_atramentowa(typ=types[self.typeList.currentIndex()],
                                                  kabel_sygn=check_list["signal"],
                                                  kabel_zas=check_list["power"],
@@ -925,7 +926,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.insert_drukarka_laserowa(typ=types[self.typeList.currentIndex()],
                                               kabel_sygn=check_list["signal"],
                                               kabel_zas=check_list["power"],
@@ -939,7 +940,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.insert_drukarka_iglowa(typ=types[self.typeList.currentIndex()],
                                             kabel_sygn=check_list["signal"],
                                             kabel_zas=check_list["power"],
@@ -953,7 +954,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.insert_laptop(typ=types[self.typeList.currentIndex()],
                                    kabel_zas=check_list["power"],
                                    mysz=check_list["mouse"],
@@ -966,7 +967,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            print(check_list)
+            #print(check_list)
             database.insert_telefon(typ=types[self.typeList.currentIndex()],
                                     kabel_zas=check_list["power"],
                                     karta_pamieci=check_list["mem_card"],
@@ -974,7 +975,7 @@ class Adder(FillForm):
                                     opakowanie=check_list["packing"],
                                     case_ob=check_list["case"],
                                     ladowarka=check_list["charger"])
-            print(check_list)
+            #print(check_list)
 
         latex_converter.to_pdf(
             empname=employees[self.empList.currentIndex()]["Imie"] + " " + employees[self.empList.currentIndex()][
@@ -993,7 +994,7 @@ class Adder(FillForm):
     def __init__(self, parent=None):
         super(Adder, self).__init__(parent)
         self.setWindowTitle("Dodawanie potwierdzeń")
-        print(employees)
+        #print(employees)
         for i in employees:
             if i["Aktywny"] == 'T':
                 self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])

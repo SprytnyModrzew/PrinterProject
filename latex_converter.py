@@ -1,12 +1,14 @@
 import os
+import io
 
 
 def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confirm, data, dicts):
-    print("woop")
+    # print("woop")
     tex = open("template.tex", "r")
-    text = tex.read()
+    with io.open("template.tex", 'r', encoding='utf8') as f:
+        text = f.read()
     tex.close()
-    print(dicts)
+    # print(dicts)
     pretty_boxes = {"T": "X", "N": ""}
     pretty_strings = {
         "power": "Kabel zasilający",
@@ -17,12 +19,12 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
         "packing": "Opakowanie",
         "black_toner": "Czarny toner",
         "color_toner": "Kolorowy toner",
-        "tape":"Taśma barwiąca",
-        "mouse":"Mysz",
-        "charger":"Ładowarka",
-        "sim_card":"Karta SIM",
-        "mem_card":"Karta pamięci",
-        "case":"obudowa"
+        "tape": "Taśma barwiąca",
+        "mouse": "Mysz",
+        "charger": "Ładowarka",
+        "sim_card": "Karta SIM",
+        "mem_card": "Karta pamięci",
+        "case": "obudowa"
     }
 
     text_table = '''\\begin{tabular}{
@@ -35,7 +37,7 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
     i = 0
     for key in dicts:
         temp = pretty_strings[key]
-        print(temp)
+        # print(temp)
         text_table = text_table + temp + " & " + pretty_boxes[dicts[key]]
         i = i + 1
         if i % 2:
@@ -45,7 +47,7 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
     if i % 2:
         text_table = text_table + " & \\\\ \\hline"
     text_table = text_table + " \\end{tabular} "
-    print(text_table)
+    # print(text_table)
 
     text = text.replace("VAR-CONFIRM", str(confirm))
     text = text.replace("VAR-TABLE", text_table)
@@ -58,15 +60,18 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
 
     text = text.replace("VAR-SERIALNUMBER", serialnumber)
     text = text.replace("VAR-SHWANG", shwang)
-    print(text)
-    print("woop1")
-    file = open("temp.tex", "w")
-    print("woop2")
+    # print(text)
+    # print("woop1")
+    file = open("temp.tex", "wb")
+    # print("woop2")
+    text = bytes(text, "utf-8")
     file.write(text)
-    print("woop3")
+    # print("woop3")
     file.close()
 
-    os.system("pdflatex temp.tex")
-    # os.system("Portable_LaTeXCH2017\\texmfs\\install\\miktex\\bin\\pdflatex.exe temp.tex")
+    # os.system("pdflatex temp.tex")
+    os.system(
+        "Portable_LaTeXCH2017\\texmfs\\install\\miktex\\bin\\pdflatex.exe temp.tex -job-name=Potwierdzenie_nr" + str(
+            confirm))
     # os.system("temp.pdf")
     return
