@@ -2,8 +2,7 @@ import os
 import sys
 from datetime import date, datetime
 
-import qtmodern.styles
-import qtmodern.windows
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
                              QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QPlainTextEdit,
                              QHBoxLayout, QGridLayout, QComboBox, QMessageBox, QCheckBox, QTableWidget,
@@ -60,6 +59,7 @@ class EmpFillForm(QWidget):
         self.formLayout = QFormLayout()
 
         self.button.clicked.connect(self.action)
+        self.setWindowIcon(QIcon("icon.ico"))
 
 
 class EmpAdder(EmpFillForm):
@@ -77,7 +77,7 @@ class EmpAdder(EmpFillForm):
         super(EmpAdder, self).action()
         # print("woop")
         database.insert_pracownik(self.lineName.text(), self.lineSurname.text(), 'T')
-        #print("woop")
+        # print("woop")
         updateEmps()
         self.destroy()
 
@@ -101,6 +101,7 @@ class EmpEditor(EmpFillForm):
             self.checkActive.setChecked(True)
         else:
             self.checkActive.setChecked(False)
+
     '''
     def deleteEmp(self):
         database.update_pracownicy(id_prac=employees[self.lineEmpNumber.currentIndex()]["Id_pracownika"],
@@ -110,13 +111,14 @@ class EmpEditor(EmpFillForm):
         updateEmps()
         self.destroy()
     '''
+
     def action(self):
         try:
             valid.name_valid(self.lineName.text())
             valid.surname_valid(self.lineSurname.text())
         except ValueError as error:
             error_dialog = QMessageBox()
-            #print(error.args)
+            # print(error.args)
             error_dialog.setWindowTitle("Error")
             error_dialog.setText(error.args[0])
             error_dialog.exec()
@@ -154,7 +156,7 @@ class EmpEditor(EmpFillForm):
         # self.mainLayout.addWidget(self.buttonDelete)
         self.setLayout(self.mainLayout)
 
-        self.button.setText("Edytuj pracownika")
+        self.button.setText("Zatwierdź zmiany")
 
         # self.buttonDelete.clicked.connect(self.deleteEmp)
         self.lineEmpNumber.currentIndexChanged.connect(self.setEmp)
@@ -176,7 +178,7 @@ class FillForm(QWidget):
             valid.description_valid(self.description.toPlainText())
         except ValueError as error:
             error_dialog = QMessageBox()
-            #print(error.args)
+            # print(error.args)
             error_dialog.setWindowTitle("Error")
             error_dialog.setText(error.args[0])
             error_dialog.exec()
@@ -190,7 +192,7 @@ class FillForm(QWidget):
         for i in range(0, len(types)):
             types[i].hide()
 
-        #print(self.typeList.currentIndex())
+        # print(self.typeList.currentIndex())
         types[self.typeList.currentIndex()].show()
         return
 
@@ -356,6 +358,7 @@ class Login(QDialog):
         super(Login, self).__init__(parent)
         self.textLabel = QLabel("Wpisz hasło dostępu")
         self.textPass = QLineEdit(self)
+        self.setWindowIcon(QIcon("icon.ico"))
 
         self.textPass.setEchoMode(QLineEdit.Password)
         self.buttonLogin = QPushButton('Login', self)
@@ -437,11 +440,12 @@ class Form(QDialog):
 
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
+        self.setWindowIcon(QIcon("icon.ico"))
         self.setWindowTitle("Menu")
         self.setMinimumWidth(200)
         self.button = QPushButton("Dodaj potwierdzenie")
         self.button2 = QPushButton("Szukaj potwierdzeń")
-        self.button3 = QPushButton("Specjalne przywileje")
+        self.button3 = QPushButton("Tryb administratora")
         self.button4 = QPushButton("Dodaj pracownika")
         self.button5 = QPushButton("Edytuj/usuń pracownika")
         self.button6 = QPushButton("Zmień hasło dostępu")
@@ -492,7 +496,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.update_drukarka_atramentowa(
                 nr_potw=self.confirmNumber,
                 kabel_sygn=check_list["signal"],
@@ -509,7 +513,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.update_drukarka_laserowa(nr_potw=self.confirmNumber,
                                               kabel_sygn=check_list["signal"],
                                               kabel_zas=check_list["power"],
@@ -523,7 +527,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.update_drukarka_iglowa(nr_potw=self.confirmNumber,
                                             kabel_sygn=check_list["signal"],
                                             kabel_zas=check_list["power"],
@@ -537,7 +541,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.update_laptop(nr_potw=self.confirmNumber,
                                    kabel_zas=check_list["power"],
                                    mysz=check_list["mouse"],
@@ -550,7 +554,7 @@ class Editor(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.update_telefon(nr_potw=self.confirmNumber,
                                     kabel_zas=check_list["power"],
                                     karta_pamieci=check_list["mem_card"],
@@ -745,7 +749,7 @@ class Searcher(QWidget):
     def search_by_serial_number(self):
         x = self.inputSerial.text()
         y = database.get_potwierdzenia_by_sn(x)
-        #(y)
+        # (y)
         self.display(y)
 
     def search_by_client_name(self):
@@ -776,7 +780,7 @@ class Searcher(QWidget):
             "Karta_sim": "Karta SIM",
             "Ladowarka": "Ładowarka"
         }
-        #print(y)
+        # print(y)
         self.table.setRowCount(len(y))
         self.table.setColumnCount(11)
         self.table.setHorizontalHeaderItem(0, QTableWidgetItem("Nr potwierdzenia"))
@@ -885,9 +889,9 @@ class Searcher(QWidget):
 class Adder(FillForm):
     def add(self):
         types = ["drukarka_atramentowa", "drukarka_laserowa", "drukarka_iglowa", "laptop", "telefon"]
-        #print(types[self.typeList.currentIndex()])
-        #print(self.lineClientNumber.text())
-        #print(employees[self.empList.currentIndex()]["Id_pracownika"])
+        # print(types[self.typeList.currentIndex()])
+        # print(self.lineClientNumber.text())
+        # print(employees[self.empList.currentIndex()]["Id_pracownika"])
         database.insert_potwierdzenie(data=date.today(),
                                       typ=types[self.typeList.currentIndex()],
                                       nazwa_urzadzenia=self.lineModel.text(),
@@ -898,9 +902,9 @@ class Adder(FillForm):
                                       informacje_dodatkowe=self.addSome.toPlainText(),
                                       opis_naprawy="",
                                       id_prac=employees[self.empList.currentIndex()]["Id_pracownika"])
-        #print("poszlo")
+        # print("poszlo")
 
-        #print(database.get_all_pracownicy())
+        # print(database.get_all_pracownicy())
         check_list = {}
         # drukarka atramentowa
         if self.typeList.currentIndex() == 0:
@@ -909,7 +913,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.insert_drukarka_atramentowa(typ=types[self.typeList.currentIndex()],
                                                  kabel_sygn=check_list["signal"],
                                                  kabel_zas=check_list["power"],
@@ -925,7 +929,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.insert_drukarka_laserowa(typ=types[self.typeList.currentIndex()],
                                               kabel_sygn=check_list["signal"],
                                               kabel_zas=check_list["power"],
@@ -939,7 +943,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.insert_drukarka_iglowa(typ=types[self.typeList.currentIndex()],
                                             kabel_sygn=check_list["signal"],
                                             kabel_zas=check_list["power"],
@@ -953,7 +957,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.insert_laptop(typ=types[self.typeList.currentIndex()],
                                    kabel_zas=check_list["power"],
                                    mysz=check_list["mouse"],
@@ -966,7 +970,7 @@ class Adder(FillForm):
                     check_list[key] = "T"
                 else:
                     check_list[key] = "N"
-            #print(check_list)
+            # print(check_list)
             database.insert_telefon(typ=types[self.typeList.currentIndex()],
                                     kabel_zas=check_list["power"],
                                     karta_pamieci=check_list["mem_card"],
@@ -974,7 +978,7 @@ class Adder(FillForm):
                                     opakowanie=check_list["packing"],
                                     case_ob=check_list["case"],
                                     ladowarka=check_list["charger"])
-            #print(check_list)
+            # print(check_list)
 
         latex_converter.to_pdf(
             empname=employees[self.empList.currentIndex()]["Imie"] + " " + employees[self.empList.currentIndex()][
@@ -992,8 +996,9 @@ class Adder(FillForm):
 
     def __init__(self, parent=None):
         super(Adder, self).__init__(parent)
+        self.setWindowIcon(QIcon("icon.ico"))
         self.setWindowTitle("Dodawanie potwierdzeń")
-        #print(employees)
+        # print(employees)
         for i in employees:
             if i["Aktywny"] == 'T':
                 self.empList.addItem(i["Imie"] + " " + i["Nazwisko"])
@@ -1005,7 +1010,6 @@ if __name__ == '__main__':
     # Create the Qt Application
     app = QApplication(sys.argv)
     form = Form()
-    qtmodern.styles.light(app)
     form.show()
     # Run the main Qt loop
     sys.exit(app.exec_())
