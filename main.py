@@ -1,19 +1,18 @@
 import os
 import sys
+from datetime import date, datetime
 
-from PyQt5.QtGui import QWindow
-from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
-                             QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QMainWindow, QPlainTextEdit,
-                             QHBoxLayout, QGridLayout, QComboBox, QErrorMessage, QMessageBox, QCheckBox, QTableWidget,
-                             QTableWidgetItem, QWidget)
 import qtmodern.styles
 import qtmodern.windows
-import valid
-import db
-from datetime import date,datetime
-import latex_converter
+from PyQt5.QtWidgets import (QLineEdit, QPushButton, QApplication,
+                             QVBoxLayout, QDialog, QLabel, QFormLayout, QGroupBox, QPlainTextEdit,
+                             QHBoxLayout, QGridLayout, QComboBox, QMessageBox, QCheckBox, QTableWidget,
+                             QTableWidgetItem, QWidget)
 
+import db
 import des
+import latex_converter
+import valid
 
 des.initial()
 des.create16keys()
