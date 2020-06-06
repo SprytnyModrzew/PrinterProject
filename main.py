@@ -351,6 +351,7 @@ class FillForm(QWidget):
         self.typeList.addItem("Drukarka igłowa")
         self.typeList.addItem("Laptop")
         self.typeList.addItem("Telefon")
+        self.setWindowIcon(QIcon("icon.ico"))
 
 
 class Login(QDialog):
@@ -394,6 +395,7 @@ class ChangePass(QDialog):
         layout.addWidget(self.passLabelNew)
         layout.addWidget(self.textPassNew)
         layout.addWidget(self.buttonLogin)
+        self.setWindowIcon(QIcon("icon.ico"))
 
     def handlePassChange(self):
         if self.textPassNew.text() == "":
@@ -410,27 +412,33 @@ class ChangePass(QDialog):
 class Form(QDialog):
     def change_pass(self):
         self.changer = ChangePass()
+        self.changer.setWindowIcon(QIcon("icon.ico"))
         self.changer.setWindowTitle("Zmiana hasła")
         self.changer.show()
 
     def search_window(self):
         self.searcher = Searcher()
+        self.searcher.setWindowIcon(QIcon("icon.ico"))
         self.searcher.show()
 
     def add_window(self):
         self.adder = Adder()
+        self.adder.setWindowIcon(QIcon("icon.ico"))
         self.adder.show()
 
     def emp_add_window(self):
         self.empAdder = EmpAdder()
+        self.empAdder.setWindowIcon(QIcon("icon.ico"))
         self.empAdder.show()
 
     def emp_edit_window(self):
         self.empEditor = EmpEditor()
+        self.empEditor.setWindowIcon(QIcon("icon.ico"))
         self.empEditor.show()
 
     def login(self):
         self.login = Login()
+        self.login.setWindowIcon(QIcon("icon.ico"))
         self.login.setWindowTitle("Logowanie")
         if self.login.exec() == QDialog.Accepted:
             self.button4.show()
