@@ -74,5 +74,10 @@ def to_pdf(empname, devicename, serialnumber, clientname, number, shwang, confir
     os.system(
         "Portable_LaTeXCH2017\\texmfs\\install\\miktex\\bin\\pdflatex.exe temp.tex -job-name=Potwierdzenie_nr" + str(
             confirm))
-    # os.system("temp.pdf")
+    if os.path.exists("Potwierdzenie_nr" + str(confirm) + ".aux"):
+        os.remove("Potwierdzenie_nr"+str(confirm)+".aux")
+    if os.path.exists("Potwierdzenie_nr" + str(confirm) + ".log"):
+        os.remove("Potwierdzenie_nr"+str(confirm)+".log")
+    if os.path.exists("temp.tex"):
+        os.remove("temp.tex")
     return

@@ -17,7 +17,7 @@ des.initial()
 des.create16keys()
 # des.encrypt("admin")
 
-if not os.path.exists("potwierdzenia.db"):
+if not os.path.exists("confirmations.db"):
     # first use of program
     # print('exists now')
     database = db.DataBase()
@@ -815,7 +815,7 @@ class Searcher(QWidget):
             self.table.setItem(i, 8, QTableWidgetItem(text))
             self.table.setItem(i, 9, QTableWidgetItem(y[i]["Opis_uszkodzenia"]))
             self.table.setItem(i, 10, QTableWidgetItem(y[i]["Opis_naprawy"]))
-        self.table.resizeColumnsToContents()
+        self.table.resizeRowsToContents()
 
     def __init__(self, parent=None):
         super(Searcher, self).__init__(parent)
