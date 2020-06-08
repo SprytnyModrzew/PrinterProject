@@ -790,7 +790,7 @@ class Searcher(QWidget):
         }
         # print(y)
         self.table.setRowCount(len(y))
-        self.table.setColumnCount(11)
+        self.table.setColumnCount(12)
         self.table.setHorizontalHeaderItem(0, QTableWidgetItem("Nr potwierdzenia"))
         self.table.setHorizontalHeaderItem(1, QTableWidgetItem("Data"))
         self.table.setHorizontalHeaderItem(2, QTableWidgetItem("Typ"))
@@ -799,9 +799,10 @@ class Searcher(QWidget):
         self.table.setHorizontalHeaderItem(5, QTableWidgetItem("Nazwa klienta"))
         self.table.setHorizontalHeaderItem(6, QTableWidgetItem("Nr telefonu"))
         self.table.setHorizontalHeaderItem(7, QTableWidgetItem("Przyjął"))
-        self.table.setHorizontalHeaderItem(8, QTableWidgetItem("Dodatkowe"))
+        self.table.setHorizontalHeaderItem(8, QTableWidgetItem("Dodatkowe informacje"))
         self.table.setHorizontalHeaderItem(9, QTableWidgetItem("Opis uszkodzenia"))
         self.table.setHorizontalHeaderItem(10, QTableWidgetItem("Opis naprawy"))
+        self.table.setHorizontalHeaderItem(11, QTableWidgetItem("Dodatkowe uwagi"))
         for i in range(0, len(y)):
             self.table.setItem(i, 0, QTableWidgetItem(str(y[i]["Nr_potwierdzenia"])))
             self.table.setItem(i, 1, QTableWidgetItem(y[i]["Data"]))
@@ -823,6 +824,7 @@ class Searcher(QWidget):
             self.table.setItem(i, 8, QTableWidgetItem(text))
             self.table.setItem(i, 9, QTableWidgetItem(y[i]["Opis_uszkodzenia"]))
             self.table.setItem(i, 10, QTableWidgetItem(y[i]["Opis_naprawy"]))
+            self.table.setItem(i, 11, QTableWidgetItem(y[i]["Informacje_dodatkowe"]))
         self.table.resizeRowsToContents()
 
     def __init__(self, parent=None):
