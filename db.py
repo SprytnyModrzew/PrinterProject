@@ -330,13 +330,13 @@ class DataBase:
         return self.sql_get_potwierdzenia(typ)
 
     def get_potwierdzenia_by_nazwa_urzadzenia(self, nazwa_urz):
-        sql_select_typ = "SELECT Typ_urzadzenia, Nr_potwierdzenia FROM Potwierdzenia WHERE Nazwa_urzadzenia = '{}';".format(nazwa_urz)
+        sql_select_typ = "SELECT Typ_urzadzenia, Nr_potwierdzenia FROM Potwierdzenia WHERE Nazwa_urzadzenia LIKE '%{}%';".format(nazwa_urz)
         self.cursor.execute(sql_select_typ)
         typ = self.cursor.fetchall()
         return self.sql_get_potwierdzenia(typ)
 
     def get_potwierdzenia_by_nazwa_klienta(self, nazwa_klienta):
-        sql_select_typ = "SELECT Typ_urzadzenia, Nr_potwierdzenia FROM Potwierdzenia WHERE Nazwa_klienta = '{}';".format(nazwa_klienta)
+        sql_select_typ = "SELECT Typ_urzadzenia, Nr_potwierdzenia FROM Potwierdzenia WHERE Nazwa_klienta LIKE '%{}%';".format(nazwa_klienta)
         self.cursor.execute(sql_select_typ)
         typ = self.cursor.fetchall()
         return self.sql_get_potwierdzenia(typ)
@@ -423,4 +423,3 @@ class DataBase:
         print(sql_update_pracownik)
         self.cursor.execute(sql_update_pracownik)
         self.conn.commit()
-
